@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "rig_id": "neolix_x3_size_7v_v1",
+  "pose_source": "ncore",
+  "ncore_path": "REPLACE_WITH_NCORE_SEQUENCE_JSON",
+  "timestamp_camera_id": "camera_front_wide_120fov",
+  "pose_timepoint": "midpoint",
+  "frame_indices": [
+    0
+  ],
+  "vehicle": {
+    "type": "L4 low-speed autonomous delivery vehicle",
+    "market_reference": "Neolix X3",
+    "calibration_scope": "X3-size research proxy; not an OEM calibration",
+    "length_m": 2.69,
+    "width_m": 1.08,
+    "height_without_lidar_m": 1.82,
+    "wheelbase_m": 1.73,
+    "payload_kg": 520,
+    "cargo_volume_m3": 3.0,
+    "maximum_design_speed_kph": 50,
+    "operating_scenarios": [
+      "campus",
+      "industrial park",
+      "residential development",
+      "urban last-mile public road"
+    ]
+  },
+  "coordinate_systems": {
+    "target_ego": "+x forward, +y left, +z up; origin is the assumed rear-axle midpoint projected onto the ground",
+    "camera": "OpenCV: +x right, +y down, +z forward",
+    "lidar": "+x forward, +y left, +z up",
+    "world": "NCore world frame used by the InstantNuRec PLY",
+    "trajectory_alignment": "T_target_ego_world is set equal to the source NCore T_rig_world at each timestamp",
+    "transform_convention": "T_camera_rig maps camera coordinates into target ego/rig coordinates"
+  },
+  "calibration_status": {
+    "vehicle_dimensions": "public product-level data",
+    "camera_hardware": "public automotive camera specification reference",
+    "camera_extrinsics": "engineering assumptions constrained to the vehicle envelope",
+    "intrinsics": "virtual rectified pinhole output; not raw-lens OEM calibration"
+  },
+  "camera_hardware_reference": {
+    "model": "Leopard Imaging LI-IMX390-GMSL2-120H class",
+    "raw_sensor_resolution": [
+      1937,
+      1217
+    ],
+    "raw_lens_horizontal_fov_deg": 122.0,
+    "raw_lens_vertical_fov_deg": 74.0,
+    "maximum_raw_frame_rate_fps": 60,
+    "experiment_output": "undistorted 100 degree horizontal-FOV pinhole at 30 FPS"
+  },
+  "intrinsics": {
+    "fx": 805.5356459301888,
+    "fy": 805.5356459301888,
+    "cx": 959.5,
+    "cy": 539.5,
+    "width": 1920,
+    "height": 1080
+  },
+  "output": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "keyframe_strategy": "frame_indices gives a safe single-timestamp 7V default; --chunk-index selects a full reconstruction chunk"
+  },
+  "lidars": [
+    {
+      "lidar_id": "roof_center",
+      "role": "configuration metadata only; the current renderer does not emit lidar",
+      "position_ego_m": [1.05, 0.0, 1.94],
+      "T_lidar_rig": [
+        [1.0, 0.0, 0.0, 1.05],
+        [0.0, 1.0, 0.0, 0.0],
+        [0.0, 0.0, 1.0, 1.94],
+        [0.0, 0.0, 0.0, 1.0]
+      ]
+    }
+  ],
+  "cameras": [
+    {
+      "camera_id": "front_center",
+      "mount": {
+        "position_ego_m": [2.2, 0.0, 1.72],
+        "yaw_pitch_roll_deg": [0.0, -4.0, 0.0],
+        "horizontal_fov_deg": 100.0,
+        "vertical_fov_deg": 67.67274797076357
+      },
+      "T_camera_rig": [
+        [0.0, -0.069756474, 0.99756405, 2.2],
+        [-1.0, 0.0, 0.0, 0.0],
+        [0.0, -0.99756405, -0.069756474, 1.72],
+        [0.0, 0.0, 0.0, 1.0]
+      ]
+    },
+    {
+      "camera_id": "front_left",
+      "mount": {
+        "position_ego_m": [2.06, 0.46, 1.68],
+        "yaw_pitch_roll_deg": [50.0, -6.0, 0.0],
+        "horizontal_fov_deg": 100.0,
+        "vertical_fov_deg": 67.67274797076357
+      },
+      "T_camera_rig": [
+        [0.766044443, -0.067189601, 0.639266352, 2.06],
+        [-0.64278761, -0.080073448, 0.761847972, 0.46],
+        [0.0, -0.994521895, -0.104528463, 1.68],
+        [0.0, 0.0, 0.0, 1.0]
+      ]
+    },
+    {
+      "camera_id": "front_right",
+      "mount": {
+        "position_ego_m": [2.06, -0.46, 1.68],
+        "yaw_pitch_roll_deg": [-50.0, -6.0, 0.0],
+        "horizontal_fov_deg": 100.0,
+        "vertical_fov_deg": 67.67274797076357
+      },
+      "T_camera_rig": [
+        [-0.766044443, -0.067189601, 0.639266352, 2.06],
+        [-0.64278761, 0.080073448, -0.761847972, -0.46],
+        [0.0, -0.994521895, -0.104528463, 1.68],
+        [0.0, 0.0, 0.0, 1.0]
+      ]
+    },
+    {
+      "camera_id": "side_left",
+      "mount": {
+        "position_ego_m": [1.1, 0.53, 1.66],
+        "yaw_pitch_roll_deg": [100.0, -8.0, 0.0],
+        "horizontal_fov_deg": 100.0,
+        "vertical_fov_deg": 67.67274797076357
+      },
+      "T_camera_rig": [
+        [0.984807753, 0.024167155, -0.171958246, 1.1],
+        [0.173648178, -0.137058749, 0.975223672, 0.53],
+        [0.0, -0.990268069, -0.139173101, 1.66],
+        [0.0, 0.0, 0.0, 1.0]
+      ]
+    },
+    {
+      "camera_id": "side_right",
+      "mount": {
+        "position_ego_m": [1.1, -0.53, 1.66],
+        "yaw_pitch_roll_deg": [-100.0, -8.0, 0.0],
+        "horizontal_fov_deg": 100.0,
+        "vertical_fov_deg": 67.67274797076357
+      },
+      "T_camera_rig": [
+        [-0.984807753, 0.024167155, -0.171958246, 1.1],
+        [0.173648178, 0.137058749, -0.975223672, -0.53],
+        [0.0, -0.990268069, -0.139173101, 1.66],
+        [0.0, 0.0, 0.0, 1.0]
+      ]
+    },
+    {
+      "camera_id": "rear_left",
+      "mount": {
+        "position_ego_m": [-0.3, 0.44, 1.62],
+        "yaw_pitch_roll_deg": [150.0, -7.0, 0.0],
+        "horizontal_fov_deg": 100.0,
+        "vertical_fov_deg": 67.67274797076357
+      },
+      "T_camera_rig": [
+        [0.5, 0.105541947, -0.859570182, -0.3],
+        [0.866025404, -0.060934672, 0.496273076, 0.44],
+        [0.0, -0.992546152, -0.121869343, 1.62],
+        [0.0, 0.0, 0.0, 1.0]
+      ]
+    },
+    {
+      "camera_id": "rear_right",
+      "mount": {
+        "position_ego_m": [-0.3, -0.44, 1.62],
+        "yaw_pitch_roll_deg": [-150.0, -7.0, 0.0],
+        "horizontal_fov_deg": 100.0,
+        "vertical_fov_deg": 67.67274797076357
+      },
+      "T_camera_rig": [
+        [-0.5, 0.105541947, -0.859570182, -0.3],
+        [0.866025404, 0.060934672, -0.496273076, -0.44],
+        [0.0, -0.992546152, -0.121869343, 1.62],
+        [0.0, 0.0, 0.0, 1.0]
+      ]
+    }
+  ],
+  "references": [
+    "https://neolix.cn/productTechnology",
+    "https://de.wedoany.com/product/135286.html",
+    "https://argoverse.github.io/user-guide/datasets/sensor.html",
+    "https://leopardimaging.com/wp-content/uploads/2023/12/LI-IMX390-GMSL2-xxxH_Datasheet_V1.4.pdf"
+  ]
+}

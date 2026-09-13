@@ -1,0 +1,40 @@
+{
+  "pose_source": "world",
+  "matrix_type": "camera_to_world",
+  "camera_axes": "opencv",
+  "intrinsics": {
+    "fx": 700.0,
+    "fy": 700.0,
+    "cx": 640.0,
+    "cy": 360.0,
+    "width": 1280,
+    "height": 720
+  },
+  "output": {
+    "width": 1280,
+    "height": 720
+  },
+  "frames": [
+    {
+      "frame_id": "frame_000000",
+      "timestamp_us": 1000000,
+      "matrix": [
+        [1.0, 0.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0, 0.0],
+        [0.0, 0.0, 1.0, 0.0],
+        [0.0, 0.0, 0.0, 1.0]
+      ]
+    },
+    {
+      "frame_id": "frame_000001",
+      "timestamp_us": 1100000,
+      "matrix": [
+        [1.0, 0.0, 0.0, 0.1],
+        [0.0, 1.0, 0.0, 0.0],
+        [0.0, 0.0, 1.0, 0.0],
+        [0.0, 0.0, 0.0, 1.0]
+      ]
+    }
+  ]
+}
+

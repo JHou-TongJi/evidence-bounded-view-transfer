@@ -1,0 +1,4 @@
+# Core package; use the documented conda environment for CUDA/gsplat.
+# pip install -e '.[ncore,sky]'
+# Third-party source required for the static 2DGS proxy: external/2d-gaussian-splatting
+# Dynamic actor experts in this V1 are 2DGS source-view proxies and are not a model download.

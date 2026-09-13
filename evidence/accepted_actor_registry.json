@@ -1,0 +1,163 @@
+{
+  "schema": "ncore-2dgs-actor-expert-registry",
+  "version": 1,
+  "status": "complete",
+  "ncore_path": "/data/zrz/Cross-Vehicle/ncore/clips/7fd4d554-b155-45c6-a46a-646486029d85/pai_7fd4d554-b155-45c6-a46a-646486029d85.json",
+  "selection": {
+    "max_masked_rgb_mae": 0.07,
+    "min_alpha_iou": 0.82,
+    "alpha_area_ratio": [
+      0.85,
+      1.2
+    ],
+    "overlap_fraction": 0.5
+  },
+  "experts": [
+    {
+      "name": "track017_camera_cross_right_120fov_legacy1750",
+      "track_id": 17,
+      "label": "heavy_truck",
+      "source_camera": "camera_cross_right_120fov",
+      "timestamp_start_us": 3817621,
+      "timestamp_end_us": 5817627,
+      "actor_dataset": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/chunk0-track17-canonical-actor-crossright-113-174-480-v1",
+      "model_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/chunk0-track17-canonical-actor-crossright-2000-v1",
+      "iteration": 1750,
+      "metrics": {
+        "masked_rgb_mae": 0.051414941996335985,
+        "alpha_iou_0_5": 0.9662759363651275,
+        "alpha_area_ratio": 1.0064213314711759,
+        "positive_frames": 10
+      },
+      "expert_spec": "/home/zrz/Cross-Vehicle-Data-Rec/configs/actor_expert_specs/7fd4_chunk0_track17_legacy.json",
+      "evaluation_report": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/evaluation-track17-canonical-actor-crossright-1750-v2/report.json",
+      "registry_name": "t017_camera_cross_right_120fov_3817621"
+    },
+    {
+      "name": "track017_camera_front_wide_120fov",
+      "track_id": 17,
+      "label": "heavy_truck",
+      "source_camera": "camera_front_wide_120fov",
+      "timestamp_start_us": 2676482,
+      "timestamp_end_us": 4776476,
+      "actor_dataset": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/datasets/track017_camera_front_wide_120fov",
+      "model_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/models/track017_camera_front_wide_120fov",
+      "iteration": -1,
+      "metrics": {
+        "masked_rgb_mae": 0.03829098865389824,
+        "alpha_iou_0_5": 0.8691313564777374,
+        "alpha_area_ratio": 1.0007387813682702,
+        "positive_frames": 10
+      },
+      "batch_manifest": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/batch_manifest.json",
+      "registry_name": "t017_camera_front_wide_120fov_2676482"
+    },
+    {
+      "name": "track017_camera_rear_right_70fov",
+      "track_id": 17,
+      "label": "heavy_truck",
+      "source_camera": "camera_rear_right_70fov",
+      "timestamp_start_us": 6109815,
+      "timestamp_end_us": 7709819,
+      "actor_dataset": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/datasets/track017_camera_rear_right_70fov",
+      "model_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/models/track017_camera_rear_right_70fov",
+      "iteration": -1,
+      "metrics": {
+        "masked_rgb_mae": 0.06244304170832038,
+        "alpha_iou_0_5": 0.8479482755064964,
+        "alpha_area_ratio": 1.057635006155796,
+        "positive_frames": 8
+      },
+      "batch_manifest": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/batch_manifest.json",
+      "registry_name": "t017_camera_rear_right_70fov_6109815"
+    },
+    {
+      "name": "track018_camera_cross_right_120fov",
+      "track_id": 18,
+      "label": "automobile",
+      "source_camera": "camera_cross_right_120fov",
+      "timestamp_start_us": 2050976,
+      "timestamp_end_us": 4084284,
+      "actor_dataset": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/datasets/track018_camera_cross_right_120fov",
+      "model_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/models/track018_camera_cross_right_120fov",
+      "iteration": -1,
+      "metrics": {
+        "masked_rgb_mae": 0.04697328314862468,
+        "alpha_iou_0_5": 0.9492809772491455,
+        "alpha_area_ratio": 1.0146996855999058,
+        "positive_frames": 11
+      },
+      "batch_manifest": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/batch_manifest.json",
+      "registry_name": "t018_camera_cross_right_120fov_2050976"
+    },
+    {
+      "name": "track042_camera_cross_left_120fov",
+      "track_id": 42,
+      "label": "automobile",
+      "source_camera": "camera_cross_left_120fov",
+      "timestamp_start_us": 7550955,
+      "timestamp_end_us": 9417632,
+      "actor_dataset": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/datasets/track042_camera_cross_left_120fov",
+      "model_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/models/track042_camera_cross_left_120fov",
+      "iteration": -1,
+      "metrics": {
+        "masked_rgb_mae": 0.024259565191136465,
+        "alpha_iou_0_5": 0.9753495852152506,
+        "alpha_area_ratio": 1.0051270515577246,
+        "positive_frames": 9
+      },
+      "batch_manifest": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/batch_manifest.json",
+      "registry_name": "t042_camera_cross_left_120fov_7550955"
+    },
+    {
+      "name": "track067_camera_cross_left_120fov",
+      "track_id": 67,
+      "label": "automobile",
+      "source_camera": "camera_cross_left_120fov",
+      "timestamp_start_us": 5717639,
+      "timestamp_end_us": 7317624,
+      "actor_dataset": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/datasets/track067_camera_cross_left_120fov",
+      "model_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/models/track067_camera_cross_left_120fov",
+      "iteration": -1,
+      "metrics": {
+        "masked_rgb_mae": 0.03438094863668084,
+        "alpha_iou_0_5": 0.9118671119213104,
+        "alpha_area_ratio": 1.0238572066010836,
+        "positive_frames": 8
+      },
+      "batch_manifest": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/batch_manifest.json",
+      "registry_name": "t067_camera_cross_left_120fov_5717639"
+    }
+  ],
+  "rejected": [
+    {
+      "expert_spec": "/home/zrz/Cross-Vehicle-Data-Rec/configs/actor_expert_specs/7fd4_chunk0_track17_legacy.json",
+      "evaluation_report": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/evaluation-track17-canonical-actor-frontwide-1750-v1/report.json",
+      "name": "track017_camera_front_wide_120fov_legacy1750",
+      "reason": "does_not_meet_registry_thresholds",
+      "metrics": {
+        "masked_rgb_mae": 0.025132089749806456,
+        "alpha_iou_0_5": 0.7385751836829715,
+        "alpha_area_ratio": 1.681706045759979,
+        "positive_frames": 9
+      }
+    },
+    {
+      "name": "track017_camera_cross_right_120fov",
+      "batch_manifest": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/batch_manifest.json",
+      "reason": "overlapping_lower_quality_expert",
+      "kept": "track017_camera_cross_right_120fov_legacy1750",
+      "metrics": {
+        "masked_rgb_mae": 0.05160950254648924,
+        "alpha_iou_0_5": 0.965807443857193,
+        "alpha_area_ratio": 1.0050593419074665,
+        "positive_frames": 10
+      }
+    }
+  ],
+  "limitations": [
+    "Selection is based on source-camera temporal holdout only; it is not target-view ground truth.",
+    "Disjoint experts are retained per track/source camera; target rendering must still use view/time visibility gates.",
+    "Deformable people are excluded because this registry only accepts rigid actor datasets."
+  ]
+}

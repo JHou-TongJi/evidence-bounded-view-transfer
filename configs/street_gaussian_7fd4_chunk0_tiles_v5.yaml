@@ -1,0 +1,54 @@
+# NCore FTheta cameras are converted to narrow, overlapping pinhole tiles.
+# Keep this separate from v4: the 30k v4 checkpoint is a diagnostic baseline.
+task: ncore_street
+exp_name: 7fd4_chunk0_rigid_vehicle_v5_tiles
+gpus: [-1]
+to_cuda: true
+source_path: /data/zrz/Cross-Vehicle/outputs/street_gaussian/datasets/7fd4d554/chunk0-v5-tiles
+model_path: /data/zrz/Cross-Vehicle/outputs/street_gaussian/models/7fd4d554/chunk0-rigid-vehicle-v5-tiles
+
+data:
+  type: NCore
+  white_background: false
+  # 3 front-wide + 3 left + 3 right + 1 rear-left + 1 rear-right tiles.
+  cameras: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  split_train: 1
+  split_test: -1
+  extent: 80
+  box_scale: 1.0
+
+model:
+  gaussian:
+    sh_degree: 1
+    fourier_dim: 1
+    flip_prob: 0.0
+  nsg:
+    include_bkgd: true
+    include_obj: true
+    include_sky: false
+    opt_track: false
+  sky:
+    white_background: false
+
+train:
+  iterations: 45000
+  test_iterations: [7500, 15000, 22500, 30000, 37500, 45000]
+  save_iterations: [15000, 30000, 45000]
+  checkpoint_iterations: [15000, 30000, 45000]
+
+optim:
+  semantic_lr: 0.01
+  densification_interval: 100
+  densify_from_iter: 500
+  densify_until_iter: 22500
+  densify_grad_threshold_bkgd: 0.0006
+  densify_grad_threshold_obj: 0.0002
+  prune_actor_box: false
+  min_actor_gaussians: 512
+  lambda_dssim: 0.2
+  lambda_reg: 0.0
+  lambda_depth_lidar: 0.0
+  lambda_sky: 0.0
+
+render:
+  fps: 10

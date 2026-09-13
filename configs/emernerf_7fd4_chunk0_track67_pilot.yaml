@@ -1,0 +1,77 @@
+# First EmerNeRF pilot: native NCore FTheta + rolling-shutter ray contract.
+# This is deliberately a short, held-out cross-camera acceptance run, not a
+# full-sequence production configuration.  --config_file is resolved by
+# EmerNeRF, so ray_bundle is intentionally an absolute server-local path.
+data:
+  dataset: ncore
+  ray_bundle: /data/zrz/Cross-Vehicle/outputs/emernerf/7fd4d554/chunk0-track67-160-182-native-rays.json
+  ray_batch_size: 2048
+  preload_device: cuda
+  pixel_source:
+    load_size: [135, 240]
+    downscale: 1
+    num_cams: 3
+    test_image_stride: 0
+    load_rgb: true
+    load_sky_mask: false
+    load_dynamic_mask: true
+    load_features: false
+    sampler:
+      buffer_downscale: 16
+      buffer_ratio: 0.0
+  lidar_source:
+    load_lidar: true
+    lidar_downsample_factor: 4
+    lidar_percentile: 0.02
+nerf:
+  unbounded: true
+  propnet:
+    num_samples_per_prop: [64, 32]
+    near_plane: 0.1
+    far_plane: 160.0
+  sampling:
+    num_samples: 48
+  model:
+    xyz_encoder:
+      n_levels: 8
+      max_resolution: 4096
+      log2_hashmap_size: 18
+    dynamic_xyz_encoder:
+      n_levels: 8
+      max_resolution: 4096
+      log2_hashmap_size: 17
+    head:
+      enable_img_embedding: false
+      enable_cam_embedding: false
+      enable_sky_head: false
+      enable_dynamic_branch: true
+      enable_shadow_head: false
+      enable_flow_branch: true
+      enable_temporal_interpolation: true
+supervision:
+  depth:
+    enable: true
+    line_of_sight:
+      enable: true
+      start_iter: 100
+      decay_steps: 500
+      start_epsilon: 5.0
+      end_epsilon: 2.0
+  dynamic:
+    loss_coef: 0.02
+optim:
+  num_iters: 500
+  lr: 0.01
+  # The upstream condition evaluates ``step % cache_rgb_freq``.  Keep this
+  # larger than this short pilot instead of setting it to zero.
+  cache_rgb_freq: 1000000
+logging:
+  # This pilot uses the dedicated strict-holdout evaluator.  Avoid invoking
+  # the upstream video renderer (which assumes every split has all cameras).
+  vis_freq: 1000000
+  print_freq: 25
+  saveckpt_freq: 500
+render:
+  render_low_res: false
+  render_full: false
+  render_test: false

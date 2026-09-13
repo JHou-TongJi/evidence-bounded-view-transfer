@@ -1,0 +1,82 @@
+# v2 native NCore experiment: seven-camera static background context while
+# track67 pixels in camera_cross_left remain a strict actor holdout.
+data:
+  dataset: ncore
+  ray_bundle: /data/zrz/Cross-Vehicle/outputs/emernerf/7fd4d554/chunk0-track67-160-182-v2-masked-context-native-rays.json
+  ray_batch_size: 2048
+  preload_device: cuda
+  pixel_source:
+    load_size: [135, 240]
+    downscale: 1
+    num_cams: 7
+    load_rgb: true
+    load_sky_mask: false
+    load_dynamic_mask: true
+    load_features: false
+    sampler:
+      buffer_downscale: 16
+      buffer_ratio: 0.0
+    ncore_sampling:
+      # Each batch is 75% background outside every conservative dynamic mask,
+      # 25% target-actor pixels from non-holdout cameras.
+      enable: true
+      actor_ray_fraction: 0.25
+      background_rgb_coef: 1.0
+      actor_rgb_coef: 1.0
+      outside_dynamic_opacity_coef: 0.05
+      actor_opacity_floor: 0.20
+      actor_opacity_coef: 0.10
+  lidar_source:
+    load_lidar: true
+    lidar_downsample_factor: 4
+    lidar_percentile: 0.02
+nerf:
+  unbounded: true
+  propnet:
+    num_samples_per_prop: [64, 32]
+    near_plane: 0.1
+    far_plane: 160.0
+  sampling:
+    num_samples: 48
+  model:
+    xyz_encoder:
+      n_levels: 8
+      max_resolution: 4096
+      log2_hashmap_size: 18
+    dynamic_xyz_encoder:
+      n_levels: 8
+      max_resolution: 4096
+      log2_hashmap_size: 17
+    head:
+      enable_img_embedding: false
+      enable_cam_embedding: false
+      enable_sky_head: false
+      enable_dynamic_branch: true
+      enable_shadow_head: false
+      enable_flow_branch: true
+      enable_temporal_interpolation: true
+supervision:
+  depth:
+    enable: true
+    line_of_sight:
+      enable: true
+      start_iter: 100
+      decay_steps: 500
+      start_epsilon: 5.0
+      end_epsilon: 2.0
+  dynamic:
+    # Mask-aware outside-opacity loss supplies the localisation signal. Keep
+    # the global sparsity regulariser weak so it cannot suppress the actor.
+    loss_coef: 0.002
+optim:
+  num_iters: 500
+  lr: 0.01
+  cache_rgb_freq: 1000000
+logging:
+  vis_freq: 1000000
+  print_freq: 25
+  saveckpt_freq: 100
+render:
+  render_low_res: false
+  render_full: false
+  render_test: false

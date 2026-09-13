@@ -1,0 +1,213 @@
+{
+  "schema": "ncore-2dgs-camera-gated-actor-target-diagnostic",
+  "version": 1,
+  "track_ids": [
+    17,
+    18,
+    42,
+    67
+  ],
+  "camera_config": "/home/zrz/Cross-Vehicle-Data-Rec/configs/7fd4_neolix_x3_size_7v.json",
+  "background_rgb_dir": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/l4-7v-nearfield-1920-static-fullclip-v1",
+  "background_depth_dir": null,
+  "background_depth_quantization_m": 0.01,
+  "static_occlusion_margin_m": 0.5,
+  "experts": [
+    {
+      "name": "t017_camera_cross_right_120fov_3817621",
+      "track_id": 17,
+      "actor_dataset": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/chunk0-track17-canonical-actor-crossright-113-174-480-v1",
+      "model_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/chunk0-track17-canonical-actor-crossright-2000-v1",
+      "iteration": 1750,
+      "checkpoint": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/chunk0-track17-canonical-actor-crossright-2000-v1/point_cloud/iteration_1750/point_cloud.ply",
+      "prototype_direction_actor": [
+        0.7828818809522521,
+        -0.6187754378763243,
+        -0.06490699467412439
+      ],
+      "prototype_distance_m": 6.232161514099396,
+      "observation_timestamps_us": [
+        3817621,
+        5817627
+      ]
+    },
+    {
+      "name": "t017_camera_front_wide_120fov_2676482",
+      "track_id": 17,
+      "actor_dataset": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/datasets/track017_camera_front_wide_120fov",
+      "model_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/models/track017_camera_front_wide_120fov",
+      "iteration": 1750,
+      "checkpoint": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/models/track017_camera_front_wide_120fov/point_cloud/iteration_1750/point_cloud.ply",
+      "prototype_direction_actor": [
+        0.9180060387409458,
+        -0.39619667393263913,
+        0.017120408869860687
+      ],
+      "prototype_distance_m": 12.553561676151089,
+      "observation_timestamps_us": [
+        2676482,
+        4776476
+      ]
+    },
+    {
+      "name": "t017_camera_rear_right_70fov_6109815",
+      "track_id": 17,
+      "actor_dataset": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/datasets/track017_camera_rear_right_70fov",
+      "model_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/models/track017_camera_rear_right_70fov",
+      "iteration": 1750,
+      "checkpoint": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/models/track017_camera_rear_right_70fov/point_cloud/iteration_1750/point_cloud.ply",
+      "prototype_direction_actor": [
+        -0.9191819078765061,
+        -0.3921072077740659,
+        -0.03683147898376877
+      ],
+      "prototype_distance_m": 7.622658164999969,
+      "observation_timestamps_us": [
+        6109815,
+        7709819
+      ]
+    },
+    {
+      "name": "t018_camera_cross_right_120fov_2050976",
+      "track_id": 18,
+      "actor_dataset": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/datasets/track018_camera_cross_right_120fov",
+      "model_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/models/track018_camera_cross_right_120fov",
+      "iteration": 1750,
+      "checkpoint": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/models/track018_camera_cross_right_120fov/point_cloud/iteration_1750/point_cloud.ply",
+      "prototype_direction_actor": [
+        -0.8345720647462306,
+        0.5507132197988114,
+        -0.014297492229046036
+      ],
+      "prototype_distance_m": 6.106455956090046,
+      "observation_timestamps_us": [
+        2050976,
+        4084284
+      ]
+    },
+    {
+      "name": "t042_camera_cross_left_120fov_7550955",
+      "track_id": 42,
+      "actor_dataset": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/datasets/track042_camera_cross_left_120fov",
+      "model_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/models/track042_camera_cross_left_120fov",
+      "iteration": 1750,
+      "checkpoint": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/models/track042_camera_cross_left_120fov/point_cloud/iteration_1750/point_cloud.ply",
+      "prototype_direction_actor": [
+        0.8586607707320465,
+        0.5125198711552675,
+        0.005006243785097099
+      ],
+      "prototype_distance_m": 6.306871179025275,
+      "observation_timestamps_us": [
+        7550955,
+        9417632
+      ]
+    },
+    {
+      "name": "t067_camera_cross_left_120fov_5717639",
+      "track_id": 67,
+      "actor_dataset": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/datasets/track067_camera_cross_left_120fov",
+      "model_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/models/track067_camera_cross_left_120fov",
+      "iteration": 1750,
+      "checkpoint": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/batch-rigid-actor-quality-window-v3/models/track067_camera_cross_left_120fov/point_cloud/iteration_1750/point_cloud.ply",
+      "prototype_direction_actor": [
+        -0.8659920632999499,
+        -0.4983121570094746,
+        -0.04174614327168649
+      ],
+      "prototype_distance_m": 6.44053957170818,
+      "observation_timestamps_us": [
+        5717639,
+        7317624
+      ]
+    }
+  ],
+  "counts": {
+    "front_center": {
+      "t017_camera_cross_right_120fov_3817621": 31,
+      "t017_camera_front_wide_120fov_2676482": 48,
+      "t017_camera_rear_right_70fov_6109815": 0,
+      "t018_camera_cross_right_120fov_2050976": 39,
+      "t042_camera_cross_left_120fov_7550955": 27,
+      "t067_camera_cross_left_120fov_5717639": 30,
+      "none": 152,
+      "static_depth_rejected_pixels": 0
+    },
+    "front_left": {
+      "t017_camera_cross_right_120fov_3817621": 0,
+      "t017_camera_front_wide_120fov_2676482": 0,
+      "t017_camera_rear_right_70fov_6109815": 0,
+      "t018_camera_cross_right_120fov_2050976": 0,
+      "t042_camera_cross_left_120fov_7550955": 29,
+      "t067_camera_cross_left_120fov_5717639": 33,
+      "none": 237,
+      "static_depth_rejected_pixels": 0
+    },
+    "front_right": {
+      "t017_camera_cross_right_120fov_3817621": 28,
+      "t017_camera_front_wide_120fov_2676482": 53,
+      "t017_camera_rear_right_70fov_6109815": 10,
+      "t018_camera_cross_right_120fov_2050976": 43,
+      "t042_camera_cross_left_120fov_7550955": 0,
+      "t067_camera_cross_left_120fov_5717639": 0,
+      "none": 195,
+      "static_depth_rejected_pixels": 0
+    },
+    "side_left": {
+      "t017_camera_cross_right_120fov_3817621": 0,
+      "t017_camera_front_wide_120fov_2676482": 0,
+      "t017_camera_rear_right_70fov_6109815": 0,
+      "t018_camera_cross_right_120fov_2050976": 0,
+      "t042_camera_cross_left_120fov_7550955": 22,
+      "t067_camera_cross_left_120fov_5717639": 24,
+      "none": 253,
+      "static_depth_rejected_pixels": 0
+    },
+    "side_right": {
+      "t017_camera_cross_right_120fov_3817621": 28,
+      "t017_camera_front_wide_120fov_2676482": 18,
+      "t017_camera_rear_right_70fov_6109815": 35,
+      "t018_camera_cross_right_120fov_2050976": 42,
+      "t042_camera_cross_left_120fov_7550955": 0,
+      "t067_camera_cross_left_120fov_5717639": 0,
+      "none": 176,
+      "static_depth_rejected_pixels": 0
+    },
+    "rear_left": {
+      "t017_camera_cross_right_120fov_3817621": 0,
+      "t017_camera_front_wide_120fov_2676482": 0,
+      "t017_camera_rear_right_70fov_6109815": 23,
+      "t018_camera_cross_right_120fov_2050976": 0,
+      "t042_camera_cross_left_120fov_7550955": 0,
+      "t067_camera_cross_left_120fov_5717639": 3,
+      "none": 276,
+      "static_depth_rejected_pixels": 0
+    },
+    "rear_right": {
+      "t017_camera_cross_right_120fov_3817621": 15,
+      "t017_camera_front_wide_120fov_2676482": 0,
+      "t017_camera_rear_right_70fov_6109815": 29,
+      "t018_camera_cross_right_120fov_2050976": 9,
+      "t042_camera_cross_left_120fov_7550955": 0,
+      "t067_camera_cross_left_120fov_5717639": 0,
+      "none": 246,
+      "static_depth_rejected_pixels": 0
+    }
+  },
+  "output_size": [
+    1920,
+    1080
+  ],
+  "max_view_angle_deg": 25.0,
+  "distance_ratio": [
+    0.6,
+    1.6
+  ],
+  "temporal_fade_us": 100000,
+  "limitations": [
+    "Actor experts are official 2DGS midpoint-pinhole proxies, not native FTheta or rolling-shutter renderings.",
+    "At most one compatible expert is selected per track inside its observed time range; unsupported tracks fail closed to static background.",
+    "Actor layers are depth-sorted against one another. If a compatible static 2DGS depth directory is supplied, only actors demonstrably behind that static surface are rejected; equal-depth baked ghosts may still be replaced.",
+    "This is not a production dynamic sequence or L4 7V asset."
+  ]
+}

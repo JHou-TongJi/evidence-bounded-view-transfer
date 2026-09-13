@@ -1,0 +1,113 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "instant-nurec-gs-renderer"
+version = "0.1.0"
+description = "Render InstantNuRec/Graphdeco 3D Gaussian PLY scenes from world or NCore camera trajectories."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24",
+  "Pillow>=10.0",
+  "plyfile>=1.0",
+  "torch>=2.1",
+  "gsplat>=1.5",
+]
+
+[project.optional-dependencies]
+ncore = [
+  "nvidia-ncore==18.7.0",
+  "universal-pathlib>=0.2",
+]
+
+sky = [
+  "transformers==4.57.1",
+  "huggingface-hub==0.36.2",
+  "safetensors>=0.4.3",
+]
+depth = [
+  "transformers==4.57.1",
+  "huggingface-hub==0.36.2",
+  "safetensors>=0.4.3",
+  "scipy>=1.10",
+]
+dev = ["pytest>=8.0"]
+opacity = ["scipy>=1.10"]
+instance = ["scipy>=1.10"]
+presentation = ["opencv-python-headless>=4.8"]
+
+[project.scripts]
+nurec-gs-render = "nurec_gs_renderer.cli:main"
+nurec-sky-build = "nurec_gs_renderer.sky_cli:main"
+nurec-gs-color-bake = "nurec_gs_renderer.color_bake_cli:main"
+nurec-gs-decontaminate = "nurec_gs_renderer.decontaminate_cli:main"
+nurec-gs-sequence-compare = "nurec_gs_renderer.sequence_compare:main"
+nurec-gs-dynamic-evaluate = "nurec_gs_renderer.dynamic_evaluate:main"
+nurec-gs-opacity-decontaminate = "nurec_gs_renderer.opacity_decontaminate_cli:main"
+nurec-gs-static-leakage = "nurec_gs_renderer.static_leakage_cli:main"
+nurec-gs-clean-static-masks = "nurec_gs_renderer.clean_static_masks_cli:main"
+nurec-gs-dynamic-associate = "nurec_gs_renderer.dynamic_associate_cli:main"
+nurec-gs-canonical-actors = "nurec_gs_renderer.canonical_actor_cli:main"
+nurec-gs-dynamic-forensics = "nurec_gs_renderer.dynamic_forensics:main"
+nurec-gs-dynamic-track-audit = "nurec_gs_renderer.dynamic_track_audit_cli:main"
+nurec-gs-street-dataset = "nurec_gs_renderer.street_dataset_cli:main"
+nurec-gs-ftheta-actor-optimize = "nurec_gs_renderer.ftheta_actor_optimize_cli:main"
+nurec-gs-ftheta-actor-pose-optimize = "nurec_gs_renderer.ftheta_actor_pose_optimize_cli:main"
+nurec-gs-actor-layer-composite = "nurec_gs_renderer.actor_layer_composite:main"
+nurec-gs-multiview-actor-audit = "nurec_gs_renderer.multiview_actor_audit_cli:main"
+nurec-gs-dynamic-canonical-audit = "nurec_gs_renderer.dynamic_canonical_audit_cli:main"
+nurec-gs-provenance-sequence-audit = "nurec_gs_renderer.provenance_sequence_audit:main"
+nurec-gs-dynamic-reconstruction-dataset = "nurec_gs_renderer.dynamic_reconstruction_dataset_cli:main"
+nurec-gs-dynamic-mask-refine = "nurec_gs_renderer.dynamic_mask_refinement_cli:main"
+nurec-gs-dynamic-mask-refine-audit = "nurec_gs_renderer.dynamic_mask_refinement_audit_cli:main"
+nurec-gs-dynamic-mask-crossview-audit = "nurec_gs_renderer.dynamic_mask_crossview_audit_cli:main"
+nurec-gs-dynamic-training-select = "nurec_gs_renderer.dynamic_training_selection_cli:main"
+nurec-gs-raw-dynamic-actor-train = "nurec_gs_renderer.raw_dynamic_actor_train_cli:main"
+nurec-gs-raw-dynamic-actor-init = "nurec_gs_renderer.raw_dynamic_actor_initialize_cli:main"
+nurec-gs-raw-dynamic-actor-densify = "nurec_gs_renderer.raw_dynamic_actor_densify_cli:main"
+nurec-gs-object-layer-observability = "nurec_gs_renderer.object_layer_observability_cli:main"
+nurec-gs-dynamic-feature-correspondence = "nurec_gs_renderer.dynamic_feature_correspondence_cli:main"
+nurec-gs-roma-multiview-audit = "nurec_gs_renderer.roma_multiview_audit_cli:main"
+nurec-gs-mast3r-correspondence = "nurec_gs_renderer.mast3r_correspondence_cli:main"
+nurec-gs-mast3r-surface-layer = "nurec_gs_renderer.mast3r_surface_layer_cli:main"
+nurec-gs-mast3r-dense-depth-audit = "nurec_gs_renderer.mast3r_dense_depth_cli:main"
+nurec-gs-mast3r-dense-surface-layer = "nurec_gs_renderer.mast3r_dense_surface_layer_cli:main"
+nurec-gs-mast3r-dense-surface-audit = "nurec_gs_renderer.mast3r_dense_surface_audit_cli:main"
+nurec-gs-mast3r-dense-surface-fuse = "nurec_gs_renderer.mast3r_dense_surface_fuse_cli:main"
+nurec-gs-mast3r-dense-surface-temporal-audit = "nurec_gs_renderer.mast3r_dense_surface_temporal_audit_cli:main"
+nurec-gs-mast3r-dense-surface-temporal-fuse = "nurec_gs_renderer.mast3r_dense_surface_temporal_fuse_cli:main"
+nurec-gs-dynamic-4d-occupancy = "nurec_gs_renderer.dynamic_4d_occupancy_cli:main"
+nurec-gs-target-coverage-audit = "nurec_gs_renderer.target_coverage_audit_cli:main"
+nurec-gs-static-layer-fuse = "nurec_gs_renderer.static_layer_fusion_cli:main"
+nurec-gs-static-scene-optimize = "nurec_gs_renderer.static_scene_optimize_cli:main"
+nurec-gs-presentation-refine = "nurec_gs_renderer.presentation_refine_cli:main"
+nurec-gs-source-anchor-composite = "nurec_gs_renderer.source_anchor_composite_cli:main"
+nurec-gs-source-proxy-composite = "nurec_gs_renderer.source_proxy_composite_cli:main"
+nurec-gs-source-proxy-stitch = "nurec_gs_renderer.source_proxy_stitch_cli:main"
+nurec-gs-source-retexture = "nurec_gs_renderer.source_retexture_cli:main"
+nurec-gs-propainter-demo = "nurec_gs_renderer.propainter_demo_cli:main"
+nurec-gs-emernerf-ncore-bundle = "nurec_gs_renderer.emernerf_ncore_bundle_cli:main"
+nurec-gs-2dgs-actor-dataset = "nurec_gs_renderer.two_dgs_actor_dataset_cli:main"
+nurec-gs-2dgs-actor-evaluate = "nurec_gs_renderer.two_dgs_actor_evaluate_cli:main"
+nurec-gs-2dgs-actor-target-render = "nurec_gs_renderer.two_dgs_actor_target_render_cli:main"
+nurec-gs-2dgs-actor-batch = "nurec_gs_renderer.two_dgs_actor_batch_cli:main"
+nurec-gs-2dgs-depth-anything = "nurec_gs_renderer.two_dgs_depth_anything_cli:main"
+nurec-gs-bev-occupancy-gate = "nurec_gs_renderer.bev_occupancy_gate_cli:main"
+nurec-gs-actor-expert-registry = "nurec_gs_renderer.actor_expert_registry_cli:main"
+nurec-gs-actor-sequence-audit = "nurec_gs_renderer.actor_sequence_audit_cli:main"
+nurec-gs-actor-target-visibility-audit = "nurec_gs_renderer.actor_target_visibility_audit_cli:main"
+nurec-gs-submission-v1 = "nurec_gs_renderer.submission_v1_cli:main"
+nurec-gs-deformable-actor-plan = "nurec_gs_renderer.deformable_actor_plan_cli:main"
+nurec-gs-deformable-actor-dataset = "nurec_gs_renderer.deformable_actor_dataset_cli:main"
+nurec-gs-deformable-actor-train = "nurec_gs_renderer.deformable_actor_train_cli:main"
+nurec-gs-deformable-actor-multiview-plan = "nurec_gs_renderer.deformable_actor_multiview_plan_cli:main"
+nurec-gs-deformable-actor-multiview-dataset = "nurec_gs_renderer.deformable_actor_multiview_dataset_cli:main"
+nurec-gs-deformable-actor-multiview-train = "nurec_gs_renderer.deformable_actor_multiview_train_cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,102 @@
+# v3 staged native NCore experiment.  It initializes only radiance/proposal
+# weights from the validated v2 2k checkpoint, then trains afresh at 480x270
+# over a longer 33-frame window.  The new actor-boundary ring is semantic
+# background supervision, not a pseudo-3D label: it stops dynamic density from
+# spilling just outside the conservative track67 silhouette.
+init_from: /data/zrz/Cross-Vehicle/outputs/emernerf/runs/ncore-emernerf/track67-v2-masked-context-pilot2000-v2/checkpoint_02000.pth
+
+data:
+  dataset: ncore
+  ray_bundle: /data/zrz/Cross-Vehicle/outputs/emernerf/7fd4d554/chunk0-track67-160-193-v3-boundary-context-native-rays.json
+  ray_batch_size: 2048
+  preload_device: cuda
+  pixel_source:
+    load_size: [270, 480]
+    downscale: 1
+    num_cams: 7
+    load_rgb: true
+    load_sky_mask: false
+    load_dynamic_mask: true
+    load_features: false
+    sampler:
+      buffer_downscale: 16
+      buffer_ratio: 0.0
+    ncore_sampling:
+      # 55% safe background, 20% semantic boundary ring, 25% selected actor.
+      # The 2px ring lies outside every dynamic instance mask, so people and
+      # other vehicles cannot become track67 background targets.
+      enable: true
+      actor_ray_fraction: 0.25
+      actor_ring_ray_fraction: 0.20
+      actor_ring_width_pixels: 2
+      # Four random images per role/batch retain long-run multi-view coverage
+      # while amortising the native per-frame rolling-ray API.
+      images_per_kind: 4
+      background_rgb_coef: 1.0
+      ring_rgb_coef: 1.0
+      actor_rgb_coef: 1.25
+      outside_dynamic_opacity_coef: 0.05
+      ring_dynamic_opacity_coef: 0.20
+      actor_opacity_floor: 0.25
+      actor_opacity_coef: 0.10
+  lidar_source:
+    load_lidar: true
+    lidar_downsample_factor: 4
+    lidar_percentile: 0.02
+
+nerf:
+  unbounded: true
+  propnet:
+    num_samples_per_prop: [64, 32]
+    near_plane: 0.1
+    far_plane: 160.0
+  sampling:
+    num_samples: 48
+  model:
+    xyz_encoder:
+      n_levels: 8
+      max_resolution: 4096
+      log2_hashmap_size: 18
+    dynamic_xyz_encoder:
+      n_levels: 8
+      max_resolution: 4096
+      log2_hashmap_size: 17
+    head:
+      enable_img_embedding: false
+      enable_cam_embedding: false
+      enable_sky_head: false
+      enable_dynamic_branch: true
+      enable_shadow_head: false
+      enable_flow_branch: true
+      enable_temporal_interpolation: true
+
+supervision:
+  depth:
+    enable: true
+    line_of_sight:
+      enable: true
+      start_iter: 100
+      decay_steps: 500
+      start_epsilon: 5.0
+      end_epsilon: 2.0
+  dynamic:
+    loss_coef: 0.002
+
+optim:
+  # A fresh staged 2k at the higher resolution/window; do not use resume_from
+  # because its optimizer state and schedule belong to the 240x135 v2 stage.
+  num_iters: 2000
+  lr: 0.005
+  cache_rgb_freq: 1000000
+
+logging:
+  vis_freq: 1000000
+  print_freq: 25
+  saveckpt_freq: 250
+
+render:
+  # Smaller chunks make the 480x270 holdout evaluator robust on a shared GPU.
+  render_chunk_size: 8192
+  render_low_res: false
+  render_full: false
+  render_test: false

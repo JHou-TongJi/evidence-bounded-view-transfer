@@ -1,0 +1,26 @@
+{
+  "schema": "ncore-2dgs-actor-expert-spec",
+  "version": 1,
+  "status": "complete",
+  "ncore_path": "/data/zrz/Cross-Vehicle/ncore/clips/7fd4d554-b155-45c6-a46a-646486029d85/pai_7fd4d554-b155-45c6-a46a-646486029d85.json",
+  "experts": [
+    {
+      "name": "track017_camera_front_wide_120fov_legacy1750",
+      "actor_dataset": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/chunk0-track17-canonical-actor-frontwide-113-164-480-v1",
+      "model_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/chunk0-track17-canonical-actor-frontwide-1750-v1",
+      "iteration": 1750,
+      "evaluation_report": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/evaluation-track17-canonical-actor-frontwide-1750-v1/report.json"
+    },
+    {
+      "name": "track017_camera_cross_right_120fov_legacy1750",
+      "actor_dataset": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/chunk0-track17-canonical-actor-crossright-113-174-480-v1",
+      "model_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/chunk0-track17-canonical-actor-crossright-2000-v1",
+      "iteration": 1750,
+      "evaluation_report": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/evaluation-track17-canonical-actor-crossright-1750-v2/report.json"
+    }
+  ],
+  "limitations": [
+    "Candidates are revalidated by nurec-gs-actor-expert-registry; this file cannot bypass silhouette, area or RGB gates.",
+    "All metrics are source-camera midpoint-pinhole proxy holdouts, not novel L4 target-view ground truth."
+  ]
+}

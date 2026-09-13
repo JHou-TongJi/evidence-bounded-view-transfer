@@ -1,0 +1,6 @@
+{
+  "pose_source": "ncore",
+  "ncore_path": "/data/zrz/Cross-Vehicle/ncore/clips/7fd4d554-b155-45c6-a46a-646486029d85/pai_7fd4d554-b155-45c6-a46a-646486029d85.json",
+  "ncore_camera_id": "camera_front_wide_120fov",
+  "frame_indices": [100, 107, 157, 160]
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "nurec-2dgs-target-render-diagnostic",
+  "version": 1,
+  "two_dgs_root": "/home/zrz/Cross-Vehicle-Data-Rec/external/2d-gaussian-splatting",
+  "source_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/chunk0-clean-static-road-nearfield-proxy-5cam-20tile-299f-480-200k-v1",
+  "model_path": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/chunk0-clean-static-road-nearfield-fullclip-20tile-12000-v1",
+  "iteration": 12000,
+  "checkpoint_ply": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/chunk0-clean-static-road-nearfield-fullclip-20tile-12000-v1/point_cloud/iteration_12000/point_cloud.ply",
+  "camera_config": "/home/zrz/Cross-Vehicle-Data-Rec/configs/7fd4_neolix_x3_size_7v.json",
+  "counts": {
+    "front_center": 299,
+    "front_left": 299,
+    "front_right": 299,
+    "side_left": 299,
+    "side_right": 299,
+    "rear_left": 299,
+    "rear_right": 299
+  },
+  "output_size": [
+    1920,
+    1080
+  ],
+  "sky_cubemap": "/data/zrz/Cross-Vehicle/outputs/sky/7fd4d554/chunk0-quality-v4-temporal.json",
+  "sky_confidence_threshold": 0.5,
+  "sky_min_sample_count": 1,
+  "depth": null,
+  "limitations": [
+    "Official 2DGS is a static global-shutter pinhole representation.",
+    "Target poses are pinhole midpoint poses; FTheta and rolling shutter are not represented.",
+    "Dynamic objects in this output are baked static surfaces, not recovered actors.",
+    "When supplied, the sky cubemap is composited only behind 2DGS alpha; it does not repair opaque geometry.",
+    "This diagnostic output is not sensor truth, a training input, or an L4 7V production sequence."
+  ]
+}

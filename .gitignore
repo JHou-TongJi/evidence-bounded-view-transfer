@@ -1,0 +1,28 @@
+# Build artefacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# Local environment — never commit: it names dataset and output roots
+env.local
+.env
+
+# Manuscript build output. The DOCX and PDF embed representative frames derived
+# from NCore, which the data-compliance statement keeps out of open
+# redistribution; the build system that produces them is in paper_build/.
+paper_build/build/
+*.docx
+*.pdf
+
+# Licensed inputs and heavy derived assets, none of which belong in this repo
+*.ply
+*.ckpt
+*.pth
+*.safetensors
+
+# OS noise
+.DS_Store
+Thumbs.db

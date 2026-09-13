@@ -1,0 +1,22 @@
+{
+  "schema": "ncore-2dgs-actor-sequence-audit",
+  "version": 1,
+  "status": "complete",
+  "actor_output": "/data/zrz/Cross-Vehicle/outputs/actor-automated/7fd4d554/l4-7v-nearfield-1920-registry-fullclip-v1",
+  "static_rgb_dir": "/data/zrz/Cross-Vehicle/outputs/2dgs/7fd4d554/l4-7v-nearfield-1920-static-fullclip-v1",
+  "camera_id": "side_right",
+  "frame_count": 299,
+  "metrics": {
+    "outside_actor_rgb_mae": 2.8804744143530035e-06,
+    "outside_actor_rgb_mae_max": 6.238753849174827e-05,
+    "actor_active_frames": 115,
+    "actor_alpha_area_mean": 0.05025451525415881,
+    "actor_alpha_area_active_mean": 0.13059117981921073,
+    "adjacent_alpha_iou_mean": 0.7066733278458907,
+    "adjacent_alpha_iou_p05": 0.21567954545426346
+  },
+  "limitations": [
+    "Outside-actor RGB equality checks compositing safety only; it is not target-view photometric ground truth.",
+    "Alpha temporal IoU does not judge whether an actor is geometrically correct in an unobserved target view."
+  ]
+}

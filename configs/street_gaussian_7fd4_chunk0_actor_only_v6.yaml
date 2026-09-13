@@ -1,0 +1,55 @@
+# Short, actor-only follow-up to the failed v5 background reconstruction.
+# The final renderer keeps the InstantNuRec static PLY frozen and composites
+# only the exported canonical actors from this run.
+task: ncore_street
+exp_name: 7fd4_chunk0_actor_only_v6
+gpus: [-1]
+to_cuda: true
+source_path: /data/zrz/Cross-Vehicle/outputs/street_gaussian/datasets/7fd4d554/chunk0-v6-actor-only
+model_path: /data/zrz/Cross-Vehicle/outputs/street_gaussian/models/7fd4d554/chunk0-actor-only-v6
+
+data:
+  type: NCore
+  white_background: false
+  cameras: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  split_train: 1
+  split_test: -1
+  extent: 80
+  box_scale: 1.0
+
+model:
+  gaussian:
+    sh_degree: 1
+    fourier_dim: 1
+    flip_prob: 0.0
+  nsg:
+    include_bkgd: false
+    include_obj: true
+    include_sky: false
+    opt_track: false
+    actor_only_supervision: true
+  sky:
+    white_background: false
+
+train:
+  iterations: 12000
+  test_iterations: [3000, 6000, 12000]
+  save_iterations: [6000, 12000]
+  checkpoint_iterations: [6000, 12000]
+
+optim:
+  semantic_lr: 0.01
+  densification_interval: 100
+  densify_from_iter: 500
+  densify_until_iter: 6000
+  densify_grad_threshold_obj: 0.0002
+  prune_actor_box: false
+  min_actor_gaussians: 512
+  max_actor_scale_m: 0.75
+  lambda_dssim: 0.2
+  lambda_reg: 0.02
+  lambda_depth_lidar: 0.02
+  lambda_sky: 0.0
+
+render:
+  fps: 10
