@@ -1,7 +1,7 @@
 # Evidence-Bounded Cross-Vehicle View Transfer with Fail-Closed Abstention
 
 Re-rendering a calibrated passenger-car recording into the geometry of a
-seven-camera L4 delivery-robot rig, under the constraint that **no image of the
+seven-camera L4 delivery-vehicle rig, under the constraint that **no image of the
 target rig exists** against which the result could be scored.
 
 This repository holds the renderer, the rig configuration, the evaluation
@@ -13,7 +13,7 @@ hold the source dataset, the trained models, or the full rendered output — see
 
 ## What the method does
 
-A passenger car and a delivery robot differ in camera centres, mounting height,
+A passenger car and a delivery vehicle differ in camera centres, mounting height,
 field of view, lens model and shutter model — all at once. That makes this
 *rig substitution*, not novel-view synthesis, and it removes the held-out
 reference image that view synthesis is normally scored against.
