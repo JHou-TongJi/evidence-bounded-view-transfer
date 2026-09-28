@@ -5,9 +5,9 @@ Every panel here is a real rendered frame of the delivered sequence. Nothing is
 simulated, redrawn or illustrative. Two sources are used, and both are checked
 before anything is written:
 
-  * `04_生成结果/selected_frames/` -- PNGs the project itself selected as the
+  * `<OUTPUT_ROOT>/selected_frames/` -- PNGs the project itself selected as the
     peak-actor frame for each target camera;
-  * `04_生成结果/generated_video/*.mp4` -- the delivered per-camera sequences.
+  * `<OUTPUT_ROOT>/generated_video/*.mp4` -- the delivered per-camera sequences.
     These decode to 299 frames each at 1920x1080, and 7 x 299 = 2093 is exactly
     the delivered frame count in the manifest, so the videos *are* the delivery
     rather than a re-render of it. The script asserts this.
@@ -36,7 +36,7 @@ ROOT = os.path.dirname(PAPER)
 sys.path.insert(0, PAPER)
 import paper_data as D  # noqa: E402
 
-GEN = os.path.join(ROOT, "04_生成结果")
+GEN = os.environ.get("OUTPUT_ROOT", os.path.join(ROOT, "generated"))
 VID = os.path.join(GEN, "generated_video")
 SEL = os.path.join(GEN, "selected_frames")
 

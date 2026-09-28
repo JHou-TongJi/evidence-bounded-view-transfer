@@ -20,7 +20,7 @@ from PIL import Image, ImageFilter, ImageDraw
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
-SRC = os.path.join(ROOT, "photo", "微信图片_20260901182743_2_53.jpg")
+SRC = os.path.join(ROOT, "photo", "target_vehicle.jpg")
 OUT = os.path.join(HERE, "fig06_vehicle.png")
 
 EXPECT_SIZE = (1706, 1279)

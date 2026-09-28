@@ -16,7 +16,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
-SRC = os.path.join(ROOT, "05_评价结果", "src",
+SRC = os.path.join(os.environ.get("DELIVERED_FRAMES",
+                                 os.path.join(ROOT, "delivered")),
                    "source_vehicle_vs_target_l4_frame270.png")
 OUT = os.path.join(HERE, "fig11_source_to_target.png")
 

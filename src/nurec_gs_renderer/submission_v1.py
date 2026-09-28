@@ -150,7 +150,7 @@ def _write_checksum_inventory(root: Path) -> tuple[Path, int]:
     RGB frames, videos, reports and code snapshot makes the package itself auditable
     after transfer without pretending that it embeds the original training data.
     """
-    destination = root / "05_评价结果" / "checksums.sha256"
+    destination = root / "05_evaluation" / "checksums.sha256"
     rows: list[str] = []
     for path in sorted(root.rglob("*")):
         if not path.is_file() or path == destination:
@@ -210,8 +210,8 @@ def _copy_code(project: Path, destination: Path) -> None:
         "else\n"
         "  echo 'Need Python with numpy and Pillow, or conda env instant-nurec.' >&2; exit 2\n"
         "fi\n"
-        "PYTHONPATH=\"$ROOT/03_工程代码/code/src\" \"${RUN[@]}\" -m nurec_gs_renderer.submission_v1_cli --verify \"$ROOT\"\n"
-        "echo \"Open 06_Demo展示/demo_7v_mosaic.mp4 or any 04_生成结果/generated_video/*.mp4\"\n",
+        "PYTHONPATH=\"$ROOT/03_code/code/src\" \"${RUN[@]}\" -m nurec_gs_renderer.submission_v1_cli --verify \"$ROOT\"\n"
+        "echo \"Open 06_demo/demo_7v_mosaic.mp4 or any 04_generated/generated_video/*.mp4\"\n",
         encoding="utf-8",
     )
     (code / "run_demo.sh").chmod(0o755)
@@ -233,94 +233,160 @@ def _markdown_documents(root: Path, options: SubmissionV1Options, metrics: dict[
         f"| {entry['track_id']} | {entry['label']} | {entry['source_camera']} | {entry['metrics']['masked_rgb_mae']:.5f} | {entry['metrics']['alpha_iou_0_5']:.4f} | {entry['metrics']['alpha_area_ratio']:.4f} |"
         for entry in registry["experts"]
     )
-    method = f"""# 技术方案报告（V1）
+    method = f"""# Technical Report (V1)
 
-## 任务与样例范围
+## Task and sample scope
 
-本提交面向“从乘用车到 L4 无人物流车的跨车型采集数据视角重建”。V1 使用公开 NCore clip
-`7fd4d554-b155-45c6-a46a-646486029d85` 的 chunk 0，生成 7 路目标小车视角各 {global_metrics['frames_per_camera']} 帧、
-{global_metrics['fps']} FPS、{global_metrics['width']}×{global_metrics['height']} 的连续序列（{global_metrics['duration_s']:.4f} 秒）。
+This submission addresses cross-vehicle view reconstruction from a passenger car
+to an L4 autonomous delivery vehicle. V1 uses chunk 0 of the public NCore clip
+`7fd4d554-b155-45c6-a46a-646486029d85` to generate a continuous sequence of
+{global_metrics['frames_per_camera']} frames per target camera across 7 cameras, at
+{global_metrics['fps']} FPS and {global_metrics['width']}x{global_metrics['height']}
+({global_metrics['duration_s']:.4f} s).
 
-## 方法
+## Method
 
-1. 使用 NCore 的标定/位姿构建 20-tile virtual-pinhole proxy，并以官方 2D Gaussian Splatting（12,000 iter）重建完整 clip 的静态背景；天空使用先前离线构建的多视图时序 cubemap，只在 2DGS alpha 后方合成；
-2. 使用经过 source-camera 时间留出检查的刚性 2DGS actor expert，对目标视角仅在观察方向、距离、时刻均兼容时叠加；其余动态区域 fail-closed 回退静态背景；
-3. 按 actor alpha 在 actor 之间排序。V1 不使用静态深度作硬遮挡真值，因为静态场景已吸收部分动态物体，会造成空洞；
-4. 输出 RGB、动态 alpha/owner 调试资产、帧映射、视频和可自动复算的指标。
+1. Build a 20-tile virtual-pinhole proxy from the NCore calibration and poses, and
+   reconstruct the static background of the full clip with the official 2D Gaussian
+   Splatting (12,000 iterations); the sky uses a previously built offline multi-view
+   temporal cubemap, composited only behind the 2DGS alpha;
+2. use rigid 2DGS actor experts that passed the source-camera temporal holdout check,
+   overlaying them on a target view only when viewing direction, distance and
+   timestamp are all compatible; all other dynamic regions fail closed to the static
+   background;
+3. order actors among themselves by actor alpha. V1 does not use static depth as hard
+   occlusion ground truth, because the static scene has absorbed some dynamic objects
+   and doing so produces holes;
+4. output RGB, dynamic alpha/owner debug assets, the frame mapping, video, and
+   automatically recomputable metrics.
 
-## 目标 L4 小车 rig
+## Target L4 rig
 
-目标车型为 `{target['vehicle']['type']}`，尺寸假设 {target['vehicle']['length_m']} m × {target['vehicle']['width_m']} m × {target['vehicle']['height_without_lidar_m']} m；
-运行场景为 {', '.join(target['vehicle']['operating_scenarios'])}。ego 为 `+x 前、+y 左、+z 上`，原点在假设后轴中点地面投影；相机使用 OpenCV 轴系。
-目标相机为 rectified pinhole、{target['output']['fps']} FPS，输出采用本 V1 的 480×270 交付分辨率（原定义 1920×1080 的 1/4 像素量级验证版本）。
+The target vehicle is `{target['vehicle']['type']}`, with assumed dimensions
+{target['vehicle']['length_m']} m x {target['vehicle']['width_m']} m x {target['vehicle']['height_without_lidar_m']} m;
+operating scenarios are {', '.join(target['vehicle']['operating_scenarios'])}. The ego frame is
+`+x forward, +y left, +z up`, with the origin at the ground projection of the assumed
+rear-axle midpoint; cameras use the OpenCV axes. The target cameras are rectified
+pinholes at {target['output']['fps']} FPS; this V1 delivers at 480x270, a quarter-pixel-scale
+validation build of the 1920x1080 definition.
 
-| 目标相机 | 位置 ego m (x,y,z) | yaw/pitch/roll ° | 水平 FOV ° |
+| Target camera | Position ego m (x,y,z) | yaw/pitch/roll deg | H-FOV deg |
 |---|---|---|---:|
 {camera_rows}
 
-该 rig 是 Neolix X3-size 工程研究假设，非 OEM 标定；完整参数见 `03_工程代码/code/configs/7fd4_neolix_x3_size_7v.json`。为与 2DGS 的当前实现匹配，最终目标视角为 global-shutter pinhole midpoint proxy；它不等同于原始 NCore FTheta/rolling-shutter 传感器成像。
+This rig is a Neolix X3-size engineering research assumption, not an OEM calibration;
+full parameters are in `03_code/code/configs/7fd4_neolix_x3_size_7v.json`. To match the
+current 2DGS implementation, the final target view is a global-shutter pinhole midpoint
+proxy; it is not equivalent to native NCore FTheta/rolling-shutter sensor imaging.
 
-## 评价体系与选择理由
+## Evaluation scheme and why these metrics
 
-- **交付完整率、分辨率一致性、帧映射完整率**：验证批处理没有遗漏，并保证生成帧能追溯源参考时刻；
-- **静态背景 LiDAR holdout 深度 MAE/median/P90**：稀疏但有物理尺度的独立路面几何检查，P90 对条带/大误差敏感；
-- **source-camera actor temporal holdout 的 RGB MAE、alpha IoU、面积比**：在有原始 mask 的视图衡量对象轮廓与外观，避免只报告目标视角主观效果；
-- **目标序列 actor 外 RGB MAE 与相邻 alpha IoU**：前者验证合成不会污染非 actor 背景，后者是时序稳定性代理；两者都不是无真值目标视角的真实性指标；
-- **near-black 比例**：仅作渲染空洞/覆盖风险提示，不作硬质量阈值，因阴影和欠曝光可为真实道路像素。
+- **Delivery completion rate, resolution consistency, frame-mapping completeness**:
+  verify that batch processing missed nothing and that every generated frame traces
+  back to a source reference timestamp;
+- **Static background LiDAR holdout depth MAE/median/P90**: a sparse but physically
+  scaled independent road-geometry check; P90 is sensitive to banding and large errors;
+- **Source-camera actor temporal holdout RGB MAE, alpha IoU, area ratio**: measure
+  object silhouette and appearance in views that have a real mask, rather than
+  reporting only a subjective impression of the target view;
+- **Target-sequence outside-actor RGB MAE and adjacent alpha IoU**: the former verifies
+  that compositing does not pollute the non-actor background, the latter is a
+  temporal-stability proxy; neither is a veracity metric for a target view that has no
+  ground truth;
+- **Near-black fraction**: a hint about rendering holes and coverage risk only, not a
+  hard quality threshold, since shadow and underexposure can be real road pixels.
 
-## V1 边界
+## V1 boundaries
 
-本结果是可复核的工程 demo，不是已验证的传感器真值：2DGS actor 采用 virtual-pinhole midpoint proxy，缺少原始 FTheta/rolling-shutter actor renderer；动态 actor 与静态背景没有独立可靠的深度排序；人员及没有满足 source holdout 的车辆不做生成式补全，而是回退静态背景。所有这些限制均在评价报告和失败案例中保留，避免将不可观测区域误表述为恢复结果。
+This result is an auditable engineering demonstration, not validated sensor ground
+truth: the 2DGS actors use a virtual-pinhole midpoint proxy and there is no native
+FTheta/rolling-shutter actor renderer; there is no independent, reliable depth ordering
+between dynamic actors and the static background; persons, and vehicles that did not
+meet the source holdout, are not generatively completed but fall back to the static
+background. All of these limits are preserved in the evaluation report and the failure
+cases, so that unobservable regions are never presented as recovered results.
 """
-    result = f"""# 实测结果报告（V1）
+    result = f"""# Measured Results Report (V1)
 
-## 交付结果
+## Delivery
 
-7 路目标相机均输出 {global_metrics['frames_per_camera']} 帧，合计 {global_metrics['total_frames']} 帧，完成率 {global_metrics['completion_rate']:.2%}；
-连续时长 {global_metrics['duration_s']:.4f} 秒。所有帧均为 {global_metrics['width']}×{global_metrics['height']} RGB PNG，并已生成每路 MP4 与 7V 拼接 Demo。
+All 7 target cameras output {global_metrics['frames_per_camera']} frames, for a total of
+{global_metrics['total_frames']} frames at a completion rate of {global_metrics['completion_rate']:.2%};
+continuous duration {global_metrics['duration_s']:.4f} s. Every frame is a
+{global_metrics['width']}x{global_metrics['height']} RGB PNG, and a per-camera MP4 and a
+seven-view mosaic demo have been generated.
 
-## 序列安全与时序指标
+## Sequence safety and temporal metrics
 
-| 相机 | actor 活跃帧 | 相邻 actor alpha IoU | 抽样 actor 外 RGB MAE |
+| Camera | Actor-active frames | Adjacent actor alpha IoU | Sampled outside-actor RGB MAE |
 |---|---:|---:|---:|
 {actor_rows}
 
-每路每 {global_metrics['metric_stride']} 帧（另含末帧）的抽样 near-black 像素比例均已写入 CSV；这是提示项而非错误率。
+The sampled near-black pixel fraction, taken every {global_metrics['metric_stride']} frames
+per camera plus the final frame, is written to the CSV; it is an advisory figure, not an
+error rate.
 
-## 路面几何独立检查
+## Independent road-geometry check
 
-本次**实际用于交付 RGB 静态背景**的 2DGS 多帧 LiDAR holdout（{road['views']} views / {road['pixels']} pixels）：MAE `{road['mae_m']:.6f} m`，
-median `{road['median_m']:.6f} m`，P90 `{road['p90_m']:.6f} m`。该检查验证了静态背景路面尺度，但不等价于目标 7V 全像素深度真值。
+The multi-frame LiDAR holdout for the 2DGS model **actually used to deliver the static
+background RGB** ({road['views']} views / {road['pixels']} pixels): MAE `{road['mae_m']:.6f} m`,
+median `{road['median_m']:.6f} m`, P90 `{road['p90_m']:.6f} m`. This validates the scale of the
+static background road surface, but it is not equivalent to per-pixel depth ground truth
+across the target seven views.
 
-## 已接受刚性 actor 的来源视图时间留出
+## Source-view temporal holdout of accepted rigid actors
 
-| Track | 类别 | source camera | RGB MAE | alpha IoU | 面积比 |
+| Track | Class | Source camera | RGB MAE | Alpha IoU | Area ratio |
 |---:|---|---|---:|---:|---:|
 {accepted}
 
-## 结论
+## Conclusion
 
-V1 通过文件完整性、帧映射、目标 rig 一致性、静态背景独立 LiDAR 深度检查和 actor 外背景不污染检查；
-它**不通过/不声称**目标未观测动态对象的真实性验收。下一轮优化会以 `05_评价结果/quality_metrics.csv` 为冻结基线，仅接受
-不降低完成率和背景安全指标、且可量化改善几何或时序指标的更改。
+V1 passes file integrity, frame mapping, target rig consistency, the independent LiDAR
+depth check on the static background, and the outside-actor background non-pollution
+check. It does **not** pass, and does not claim, veracity acceptance for unobserved
+dynamic objects in the target view. The next optimisation round will treat
+`05_evaluation/quality_metrics.csv` as a frozen baseline and accept only changes that do
+not reduce the completion rate or the background-safety metrics and that measurably
+improve a geometric or temporal metric.
 """
-    failure = """# 失败案例与技术边界
+    failure = """# Failure Cases and Technical Boundaries
 
-1. **行人和未被独立 source holdout 支持的车辆**：没有可靠跨相机/目标视角几何，V1 采取 fail-closed 静态回退，可能表现为模糊、残留或缺失；未使用生成式补图伪造。
-2. **近场动态对象与静态背景重叠**：静态场景会吸收部分移动主体，不能把 static expected depth 当硬遮挡真值；此前会产生灰色空洞，V1 已禁用此 gate。
-3. **静态背景表面**：树线、建筑边缘、路面仍可能有 2DGS/3DGS proxy 的涂抹；LiDAR holdout 仅覆盖可见路面采样点，不能证明全图。
-4. **相机模型**：背景与 actor 层均使用工程 pinhole midpoint proxy，不能宣称已实现目标相机或 actor 原生 FTheta/rolling shutter。
-5. **后向/侧向动态覆盖**：由于 source view compatibility gate，多数帧没有 actor 层，这是有意保守选择，不应当解读为动态重建完成。
+1. **Pedestrians and vehicles not supported by an independent source holdout**: with no
+   reliable cross-camera/target-view geometry, V1 falls back closed to the static
+   background. They may appear blurred, as residue, or missing; no generative inpainting
+   is used to fake them.
+2. **Near-field dynamic objects overlapping the static background**: the static scene
+   absorbs some moving subjects, so static expected depth cannot be treated as hard
+   occlusion ground truth. Doing so previously produced grey holes, and V1 disables that
+   gate.
+3. **Static background surfaces**: tree lines, building edges and the road surface may
+   still carry 2DGS/3DGS proxy smearing; the LiDAR holdout covers only visible road
+   sample points and cannot vouch for the whole image.
+4. **Camera model**: both the background and the actor layer use an engineering pinhole
+   midpoint proxy. No claim is made to have implemented native FTheta/rolling shutter for
+   the target camera or for actors.
+5. **Rear and lateral dynamic coverage**: because of the source-view compatibility gate,
+   most frames carry no actor layer. This is a deliberate conservative choice and must
+   not be read as dynamic reconstruction being complete.
 """
-    compliance = """# 数据合规与真实性声明（V1）
+    compliance = """# Data Compliance and Veracity Statement (V1)
 
-- 本 V1 使用 NVIDIA 发布的 PhysicalAI-Autonomous-Vehicles-NCore 公开数据子集；提交包不包含、也不再分发原始图像、点云或模型权重。
-- 代码、配置和数据血缘表保留了输入 clip、模型/算法来源和输出映射，供拥有相应数据访问权限的评审方复核。
-- 不含账号、令牌、私钥或隐蔽网络访问；运行不依赖在线服务。
-- 生成结果由记录的程序批量产生；未通过人工逐帧替换或伪造。对缺乏几何证据的动态对象采用静态回退，而不是生成式补全。
-- 第三方项目与许可提示见 `03_工程代码/code/third_party.md`；评审和再发布须遵守各上游许可证及赛事数据要求。
+- This V1 uses the public NVIDIA PhysicalAI-Autonomous-Vehicles-NCore data subset; the
+  submission package neither contains nor redistributes source images, point clouds or
+  model weights.
+- The code, configuration and data-lineage table record the input clip, the model and
+  algorithm provenance, and the output mapping, for reviewers holding the corresponding
+  data access rights.
+- It contains no accounts, tokens or private keys, and no covert network access; running
+  it depends on no online service.
+- The results are produced in batch by the recorded programs; no frame was manually
+  substituted or fabricated. Dynamic objects lacking geometric evidence fall back to the
+  static background rather than being generatively completed.
+- Third-party projects and licence notes are in `03_code/code/third_party.md`; review and
+  republication must observe each upstream licence and the competition data requirements.
 """
-    return {"技术方案报告.md": method, "实测结果报告.md": result, "failure_cases.md": failure, "数据合规声明.md": compliance}
+    return {"technical_report.md": method, "measured_results.md": result, "failure_cases.md": failure, "data_compliance.md": compliance}
 
 
 def _write_html(path: Path, title: str, markdown: str) -> None:
@@ -445,29 +511,29 @@ def build_submission_v1(options: SubmissionV1Options) -> Path:
 
     print("Submission V1: writing documents and code snapshot", flush=True)
     output.mkdir(parents=True)
-    for relative in ("01_技术方案", "02_数据说明", "03_工程代码", "04_生成结果/generated_images", "04_生成结果/generated_video", "05_评价结果/evidence", "06_Demo展示/sample_cases"):
+    for relative in ("01_technical_report", "02_data_notes", "03_code", "04_generated/generated_images", "04_generated/generated_video", "05_evaluation/evidence", "06_demo/sample_cases"):
         (output / relative).mkdir(parents=True, exist_ok=True)
     docs = _markdown_documents(output, options, metrics, road, registry)
-    (output / "01_技术方案" / "技术方案报告.md").write_text(docs["技术方案报告.md"], encoding="utf-8")
-    (output / "05_评价结果" / "实测结果报告.md").write_text(docs["实测结果报告.md"], encoding="utf-8")
-    (output / "05_评价结果" / "failure_cases.md").write_text(docs["failure_cases.md"], encoding="utf-8")
-    (output / "02_数据说明" / "数据合规声明.md").write_text(docs["数据合规声明.md"], encoding="utf-8")
-    for md_path in (output / "01_技术方案" / "技术方案报告.md", output / "05_评价结果" / "实测结果报告.md", output / "02_数据说明" / "数据合规声明.md"):
+    (output / "01_technical_report" / "technical_report.md").write_text(docs["technical_report.md"], encoding="utf-8")
+    (output / "05_evaluation" / "measured_results.md").write_text(docs["measured_results.md"], encoding="utf-8")
+    (output / "05_evaluation" / "failure_cases.md").write_text(docs["failure_cases.md"], encoding="utf-8")
+    (output / "02_data_notes" / "data_compliance.md").write_text(docs["data_compliance.md"], encoding="utf-8")
+    for md_path in (output / "01_technical_report" / "technical_report.md", output / "05_evaluation" / "measured_results.md", output / "02_data_notes" / "data_compliance.md"):
         html = md_path.with_suffix(".html"); _write_html(html, md_path.stem, md_path.read_text(encoding="utf-8")); _make_pdf(html, md_path.with_suffix(".pdf")); html.unlink(missing_ok=True)
 
     target = _read_json(options.camera_config)
-    (output / "02_数据说明" / "数据来源说明.md").write_text(
-        f"# 数据来源说明\n\n- 数据集：NVIDIA PhysicalAI-Autonomous-Vehicles-NCore。\n- 本次 clip：`{options.ncore_path}`。\n- 范围：chunk 0，source reference camera `{options.source_camera_id}`，{frames} 个参考帧。\n- 本提交不含原始 NCore 数据；数据许可、版本和访问方式须按 NVIDIA 发布页面及赛事要求复核。\n",
+    (output / "02_data_notes" / "data_sources.md").write_text(
+        f"# Data Sources\n\n- Dataset: NVIDIA PhysicalAI-Autonomous-Vehicles-NCore.\n- Clip: `{options.ncore_path}`.\n- Scope: chunk 0, source reference camera `{options.source_camera_id}`, {frames} reference frames.\n- This submission carries no source NCore data; the data licence, version and access route must be re-checked against the NVIDIA release page and the competition requirements.\n",
         encoding="utf-8")
-    (output / "02_数据说明" / "源车型传感器说明.md").write_text(
-        "# 源车型传感器说明\n\n源数据含 7 路 NCore 相机、原始 FTheta 标定、rolling shutter 位姿和顶部 LiDAR。\n本项目按 `T_source_target` 命名变换：`T_camera_world = T_rig_world @ T_camera_rig`，再求逆供渲染器使用。\n详细解析在 `03_工程代码/code/src/nurec_gs_renderer/pose_sources.py`。\n",
+    (output / "02_data_notes" / "source_vehicle_sensors.md").write_text(
+        "# Source Vehicle Sensors\n\nThe source data contains 7 NCore cameras, native FTheta calibration, rolling-shutter poses and a roof LiDAR.\nTransforms follow the `T_source_target` convention: `T_camera_world = T_rig_world @ T_camera_rig`, inverted for the renderer.\nThe detailed resolution is in `03_code/code/src/nurec_gs_renderer/pose_sources.py`.\n",
         encoding="utf-8")
-    (output / "02_数据说明" / "目标小车传感器说明.md").write_text(
-        "# 目标小车传感器说明\n\n完整 7V 目标 rig 见 `03_工程代码/code/configs/7fd4_neolix_x3_size_7v.json`。\n本 V1 使用其目标安装位置和朝向，输出使用 480×270 交付分辨率，30 FPS。该 rig 为工程研究 proxy，非 OEM 标定。\n",
+    (output / "02_data_notes" / "target_platform_sensors.md").write_text(
+        "# Target Platform Sensors\n\nThe complete seven-view target rig is in `03_code/code/configs/7fd4_neolix_x3_size_7v.json`.\nThis V1 uses its mounting positions and orientations, delivering at 480x270 and 30 FPS. The rig is an engineering research proxy, not an OEM calibration.\n",
         encoding="utf-8")
-    _copy_code(project, output / "03_工程代码")
-    shutil.copy2(options.camera_config, output / "03_工程代码" / "code" / "configs" / options.camera_config.name)
-    evidence = _copy_evidence(output / "05_评价结果" / "evidence", {
+    _copy_code(project, output / "03_code")
+    shutil.copy2(options.camera_config, output / "03_code" / "code" / "configs" / options.camera_config.name)
+    evidence = _copy_evidence(output / "05_evaluation" / "evidence", {
         "selected_sequence_manifest": sequence_manifest_path,
         "selected_background_manifest": background_manifest_path,
         "accepted_actor_registry": options.expert_registry,
@@ -492,8 +558,8 @@ def build_submission_v1(options: SubmissionV1Options) -> Path:
     for entry in registry["experts"]:
         for metric, value in entry["metrics"].items():
             metrics_rows.append(["source_holdout", entry["name"], metric, value, "fraction" if "iou" in metric or "ratio" in metric else "rgb", "higher" if "iou" in metric else "lower" if "mae" in metric else "report", "registry gate", "Source-camera temporal holdout metric"])
-    _write_csv(output / "04_生成结果" / "frame_mapping.csv", ["target_camera_id", "target_frame_index", "target_time_s", "target_fps", "source_reference_camera", "source_reference_frame_index", "relative_rgb_path"], mapping_rows)
-    _write_csv(output / "05_评价结果" / "quality_metrics.csv", ["scope", "entity", "metric", "value", "unit", "direction", "acceptance_or_interpretation", "rationale"], metrics_rows)
+    _write_csv(output / "04_generated" / "frame_mapping.csv", ["target_camera_id", "target_frame_index", "target_time_s", "target_fps", "source_reference_camera", "source_reference_frame_index", "relative_rgb_path"], mapping_rows)
+    _write_csv(output / "05_evaluation" / "quality_metrics.csv", ["scope", "entity", "metric", "value", "unit", "direction", "acceptance_or_interpretation", "rationale"], metrics_rows)
     lineage_rows = [
         ["source_ncore_clip", str(options.ncore_path), "input", "NCore clip and calibration; not redistributed", "NVIDIA NCore"],
         ["target_rig", str(options.camera_config), "configuration", _sha256(options.camera_config), "project config"],
@@ -502,50 +568,50 @@ def build_submission_v1(options: SubmissionV1Options) -> Path:
         ["actor_registry", str(options.expert_registry), "accepted source-view experts", _sha256(options.expert_registry), "source temporal holdout gate"],
         ["road_holdout", str(options.road_depth_report), "quality evidence", _sha256(options.road_depth_report), "multi-scan LiDAR holdout"],
     ]
-    _write_csv(output / "05_评价结果" / "data_lineage.csv", ["artifact", "source_or_path", "role", "fingerprint_or_note", "provenance"], lineage_rows)
+    _write_csv(output / "05_evaluation" / "data_lineage.csv", ["artifact", "source_or_path", "role", "fingerprint_or_note", "provenance"], lineage_rows)
 
     video_paths: list[Path] = []
     for camera, files in all_files.items():
         print(f"Submission V1: copying RGB/video {camera}", flush=True)
-        target_dir = output / "04_生成结果" / "generated_images" / camera
+        target_dir = output / "04_generated" / "generated_images" / camera
         target_dir.mkdir(parents=True)
         for source in files:
             shutil.copy2(source, target_dir / source.name)
         source_video = _camera_video_path(sequence_root, camera)
-        video_target = output / "04_生成结果" / "generated_video" / f"{camera}.mp4"
+        video_target = output / "04_generated" / "generated_video" / f"{camera}.mp4"
         shutil.copy2(source_video, video_target); video_paths.append(video_target)
         for frame in (0, frames // 2, frames - 1):
-            shutil.copy2(files[frame], output / "06_Demo展示" / "sample_cases" / f"{camera}_{frame:06d}.png")
-    mosaic = output / "06_Demo展示" / "demo_7v_mosaic.mp4"
+            shutil.copy2(files[frame], output / "06_demo" / "sample_cases" / f"{camera}_{frame:06d}.png")
+    mosaic = output / "06_demo" / "demo_7v_mosaic.mp4"
     print("Submission V1: encoding 7V demo mosaic", flush=True)
     _make_mosaic(video_paths, mosaic)
-    shutil.copy2(mosaic, output / "04_生成结果" / "generated_video" / "demo_7v_mosaic.mp4")
+    shutil.copy2(mosaic, output / "04_generated" / "generated_video" / "demo_7v_mosaic.mp4")
 
-    summary = {"schema": SCHEMA, "version": PACKAGE_VERSION, "created_at": datetime.now(timezone.utc).isoformat(), "inputs": {"sequence_root": str(sequence_root), "background_root": str(background_root), "camera_config": str(options.camera_config.resolve()), "expert_registry": str(options.expert_registry.resolve()), "road_depth_report": str(options.road_depth_report.resolve()), "ncore_path": str(options.ncore_path.resolve())}, "evidence": evidence, "metrics": metrics, "submission_files": {"frame_mapping_rows": len(mapping_rows), "quality_metric_rows": len(metrics_rows), "cameras": list(CAMERAS), "demo": str(mosaic.relative_to(output))}, "reproducibility": {"renderer_snapshot": "03_工程代码/code/src/nurec_gs_renderer", "python": sys.version, "full_regeneration_requires": ["the external NCore clip named above", "the recorded 2DGS checkpoints and temporal sky asset referenced by copied manifests", "the local 2D Gaussian Splatting external repository"], "integrity_command": "bash 03_工程代码/code/run_demo.sh"}, "limitations": sequence_manifest.get("limitations", [])}
-    (output / "05_评价结果" / "submission_manifest.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+    summary = {"schema": SCHEMA, "version": PACKAGE_VERSION, "created_at": datetime.now(timezone.utc).isoformat(), "inputs": {"sequence_root": str(sequence_root), "background_root": str(background_root), "camera_config": str(options.camera_config.resolve()), "expert_registry": str(options.expert_registry.resolve()), "road_depth_report": str(options.road_depth_report.resolve()), "ncore_path": str(options.ncore_path.resolve())}, "evidence": evidence, "metrics": metrics, "submission_files": {"frame_mapping_rows": len(mapping_rows), "quality_metric_rows": len(metrics_rows), "cameras": list(CAMERAS), "demo": str(mosaic.relative_to(output))}, "reproducibility": {"renderer_snapshot": "03_code/code/src/nurec_gs_renderer", "python": sys.version, "full_regeneration_requires": ["the external NCore clip named above", "the recorded 2DGS checkpoints and temporal sky asset referenced by copied manifests", "the local 2D Gaussian Splatting external repository"], "integrity_command": "bash 03_code/code/run_demo.sh"}, "limitations": sequence_manifest.get("limitations", [])}
+    (output / "05_evaluation" / "submission_manifest.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     (output / "reproduce_submission.sh").write_text(
         "#!/usr/bin/env bash\nset -euo pipefail\n"
         "if [[ $# -ne 1 ]]; then echo 'usage: ./reproduce_submission.sh /absolute/new-output-directory' >&2; exit 2; fi\n"
         "ROOT=$(cd \"$(dirname \"$0\")\" && pwd)\nOUT=$1\n"
         "if [[ -e \"$OUT\" ]]; then echo \"refusing to overwrite: $OUT\" >&2; exit 2; fi\n"
-        f"PYTHONPATH=\"$ROOT/03_工程代码/code/src\" python -m nurec_gs_renderer.submission_v1_cli --sequence-root {sequence_root} --background-root {background_root} --camera-config {options.camera_config.resolve()} --expert-registry {options.expert_registry.resolve()} --road-depth-report {options.road_depth_report.resolve()} --ncore-path {options.ncore_path.resolve()} --output \"$OUT\" --fps {options.fps} --metric-stride {options.metric_stride}\n",
+        f"PYTHONPATH=\"$ROOT/03_code/code/src\" python -m nurec_gs_renderer.submission_v1_cli --sequence-root {sequence_root} --background-root {background_root} --camera-config {options.camera_config.resolve()} --expert-registry {options.expert_registry.resolve()} --road-depth-report {options.road_depth_report.resolve()} --ncore-path {options.ncore_path.resolve()} --output \"$OUT\" --fps {options.fps} --metric-stride {options.metric_stride}\n",
         encoding="utf-8",
     )
     (output / "reproduce_submission.sh").chmod(0o755)
     (output / "README.md").write_text(
         "# Cross-Vehicle L4 7V Submission V1\n\n"
-        "Start with `01_技术方案/技术方案报告.pdf` and `05_评价结果/实测结果报告.pdf`. The continuous seven-view demo is `06_Demo展示/demo_7v_mosaic.mp4`.\n\n"
-        "- Full per-camera RGB sequences: `04_生成结果/generated_images/`\n"
-        "- Per-camera MP4 and mosaic: `04_生成结果/generated_video/`\n"
-        "- Mapping, metrics and lineage: `04_生成结果/frame_mapping.csv`, `05_评价结果/`\n"
-        "- Code/configuration snapshot: `03_工程代码/code/`; full regeneration: `./reproduce_submission.sh /absolute/new-output-directory`\n"
-        "- Integrity verification (all copied frames/videos/reports/code): `bash 03_工程代码/code/run_demo.sh`\n\n"
+        "Start with `01_technical_report/technical_report.pdf` and `05_evaluation/measured_results.pdf`. The continuous seven-view demo is `06_demo/demo_7v_mosaic.mp4`.\n\n"
+        "- Full per-camera RGB sequences: `04_generated/generated_images/`\n"
+        "- Per-camera MP4 and mosaic: `04_generated/generated_video/`\n"
+        "- Mapping, metrics and lineage: `04_generated/frame_mapping.csv`, `05_evaluation/`\n"
+        "- Code/configuration snapshot: `03_code/code/`; full regeneration: `./reproduce_submission.sh /absolute/new-output-directory`\n"
+        "- Integrity verification (all copied frames/videos/reports/code): `bash 03_code/code/run_demo.sh`\n\n"
         "This is an evidence-first V1 demo. It clearly labels unsupported dynamic regions as static fallback and must not be interpreted as target-view sensor ground truth.\n",
         encoding="utf-8")
     checksum_file, checksum_entries = _write_checksum_inventory(output)
     summary["submission_files"]["checksum_file"] = str(checksum_file.relative_to(output))
     summary["submission_files"]["checksum_entries"] = checksum_entries
-    (output / "05_评价结果" / "submission_manifest.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+    (output / "05_evaluation" / "submission_manifest.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     # The manifest was intentionally written before checksumming so it is itself
     # covered. Re-write only metadata that is already known before generating the
     # inventory; do not mutate any covered file afterwards.
@@ -555,12 +621,12 @@ def build_submission_v1(options: SubmissionV1Options) -> Path:
 
 def verify_submission_v1(root: Path) -> dict[str, Any]:
     root = root.resolve()
-    required = [root / "README.md", root / "reproduce_submission.sh", root / "01_技术方案" / "技术方案报告.pdf", root / "03_工程代码" / "code" / "run_demo.sh", root / "04_生成结果" / "frame_mapping.csv", root / "05_评价结果" / "quality_metrics.csv", root / "05_评价结果" / "checksums.sha256", root / "06_Demo展示" / "demo_7v_mosaic.mp4"]
+    required = [root / "README.md", root / "reproduce_submission.sh", root / "01_technical_report" / "technical_report.pdf", root / "03_code" / "code" / "run_demo.sh", root / "04_generated" / "frame_mapping.csv", root / "05_evaluation" / "quality_metrics.csv", root / "05_evaluation" / "checksums.sha256", root / "06_demo" / "demo_7v_mosaic.mp4"]
     missing = [str(path) for path in required if not path.is_file() or path.stat().st_size == 0]
-    manifest = _read_json(root / "05_评价结果" / "submission_manifest.json") if not missing else {}
+    manifest = _read_json(root / "05_evaluation" / "submission_manifest.json") if not missing else {}
     frames = int(manifest.get("metrics", {}).get("global", {}).get("frames_per_camera", 0))
     for camera in CAMERAS:
-        rgb = sorted((root / "04_生成结果" / "generated_images" / camera).glob("*.png"))
+        rgb = sorted((root / "04_generated" / "generated_images" / camera).glob("*.png"))
         if len(rgb) != frames:
             missing.append(f"{camera}: expected {frames} copied RGB frames, found {len(rgb)}")
         else:
@@ -571,7 +637,7 @@ def verify_submission_v1(root: Path) -> dict[str, Any]:
             else:
                 if sorted(indices) != list(range(frames)):
                     missing.append(f"{camera}: copied RGB indices are not contiguous 000000..")
-    checksum = root / "05_评价结果" / "checksums.sha256"
+    checksum = root / "05_evaluation" / "checksums.sha256"
     checked = 0
     if checksum.is_file():
         for line_number, line in enumerate(checksum.read_text(encoding="utf-8").splitlines(), start=1):

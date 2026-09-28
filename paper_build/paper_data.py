@@ -13,9 +13,9 @@ import re
 import statistics as st
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-EV = os.path.join(ROOT, "05_评价结果", "evidence")
-CFG = os.path.join(ROOT, "03_工程代码", "configs", "7fd4_neolix_x3_size_7v.json")
-QCSV = os.path.join(ROOT, "05_评价结果", "quality_metrics.csv")
+EV = os.path.join(ROOT, "evidence")
+CFG = os.path.join(ROOT, "configs", "7fd4_neolix_x3_size_7v.json")
+QCSV = os.path.join(ROOT, "evidence", "quality_metrics.csv")
 
 CAMS = ["front_center", "front_left", "front_right", "side_left",
         "side_right", "rear_left", "rear_right"]
@@ -59,8 +59,9 @@ INTR = RIG["intrinsics"]
 HW = RIG["camera_hardware_reference"]
 
 #: The only source-camera mounting NCore publishes for this clip, from
-#: 02_数据说明/源车型传感器说明.md ("安装位置示例 (2.010, -0.061, 1.610) m,
-#: 相对源车 rig"). The rig config sets the target ego frame equal to the source
+#: docs/source-vehicle-sensors.md ("Example mounting position
+#: (2.010, -0.061, 1.610) m, relative to the source vehicle rig"). The rig config
+#: sets the target ego frame equal to the source
 #: rig frame at every timestamp, so source and target mountings are directly
 #: comparable in one frame.
 SRC_CAM = {"id": "camera_front_wide_120fov", "position_rig_m": (2.010, -0.061, 1.610)}
@@ -70,7 +71,7 @@ def platform_spec():
     """Target platform and sensor specification, straight from the rig config.
 
     Returns (group, item, value) rows. Every value is read from
-    03_工程代码/configs/7fd4_neolix_x3_size_7v.json; nothing is transcribed.
+    configs/7fd4_neolix_x3_size_7v.json; nothing is transcribed.
     """
     c0 = RIG["cameras"][0]["mount"]
     out = RIG["output"]

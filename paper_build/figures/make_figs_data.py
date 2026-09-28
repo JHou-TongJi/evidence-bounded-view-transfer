@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-EV   = os.path.join(ROOT, "05_评价结果", "evidence")
+EV   = os.path.join(ROOT, "evidence")
 OUT  = os.path.dirname(os.path.abspath(__file__))
 
 # ---- IEEE style -------------------------------------------------------------

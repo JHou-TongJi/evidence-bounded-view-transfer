@@ -79,7 +79,7 @@ configuration: [`configs/7fd4_neolix_x3_size_7v.json`](configs/7fd4_neolix_x3_si
 
 Camera extrinsics are engineering assumptions constrained to the vehicle
 envelope, not an OEM calibration. The platform specification and its provenance
-are in [`docs/目标小车传感器说明.md`](docs/目标小车传感器说明.md).
+are in [`docs/target-platform-sensors.md`](docs/target-platform-sensors.md).
 
 ![Platform](docs/figures/fig05_platform.png)
 
@@ -220,7 +220,7 @@ see below.
 | [`evidence/front_*.json`, `side_*.json`, `rear_*.json`](evidence) | Per-camera composite audit, 7 files |
 | [`evidence/static_2dgs_1080p_manifest.json`](evidence) | Static-layer render manifest |
 | [`evidence/actor_composite_1080p_manifest.json`](evidence) | Actor-layer composite manifest |
-| [`evidence/checksums.sha256`](evidence/checksums.sha256) | SHA-256 over every evidence file |
+| [`evidence/checksums.sha256`](evidence/checksums.sha256) | SHA-256 over every file in `evidence/`; verify with `sha256sum -c evidence/checksums.sha256` |
 | [`paper_build/figures/dataset_panels.json`](paper_build/figures/dataset_panels.json) | Panel counts backing the dataset figures (8 + 7 + 6 = 21) |
 
 Each per-camera JSON carries its own `limitations` block naming what the metric
@@ -230,13 +230,13 @@ does **not** establish. Those blocks are quoted verbatim in the manuscript.
 
 | Document | Contents |
 |---|---|
-| [Technical report](docs) | `赛题一…技术方案报告.md` — full technical report |
-| [`docs/实测结果报告.md`](docs/实测结果报告.md) | Measured-results report |
-| [`docs/失败案例与限制.md`](docs/失败案例与限制.md) | Failure log and limits |
-| [`docs/数据来源说明.md`](docs/数据来源说明.md) | Data-source notes |
-| [`docs/数据合规声明.md`](docs/数据合规声明.md) | Data-compliance statement |
-| [`docs/源车型传感器说明.md`](docs/源车型传感器说明.md) | Source-vehicle sensor notes |
-| [`docs/目标小车传感器说明.md`](docs/目标小车传感器说明.md) | Target-platform sensor notes |
+| [`docs/technical-report.md`](docs/technical-report.md) | Full technical report |
+| [`docs/measured-results.md`](docs/measured-results.md) | Measured-results report |
+| [`docs/failure-cases-and-limits.md`](docs/failure-cases-and-limits.md) | Failure log and limits |
+| [`docs/data-sources.md`](docs/data-sources.md) | Data-source notes |
+| [`docs/data-compliance.md`](docs/data-compliance.md) | Data-compliance statement |
+| [`docs/source-vehicle-sensors.md`](docs/source-vehicle-sensors.md) | Source-vehicle sensor notes |
+| [`docs/target-platform-sensors.md`](docs/target-platform-sensors.md) | Target-platform sensor notes |
 
 ---
 

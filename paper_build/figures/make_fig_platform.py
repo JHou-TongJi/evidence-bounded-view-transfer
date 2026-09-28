@@ -2,7 +2,7 @@
 """Target platform elevations: side and front views with sensor placement.
 
 Every dimension and every sensor position is read from
-03_工程代码/configs/7fd4_neolix_x3_size_7v.json. Nothing is hand-placed, so the
+configs/7fd4_neolix_x3_size_7v.json. Nothing is hand-placed, so the
 drawing cannot disagree with the rig the renderer actually used.
 
 This is a dimensioned engineering drawing rather than a product photograph, for
@@ -24,7 +24,7 @@ from matplotlib.patches import FancyBboxPatch, Rectangle, Circle, Wedge
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
-CFG = os.path.join(ROOT, "03_工程代码", "configs", "7fd4_neolix_x3_size_7v.json")
+CFG = os.path.join(ROOT, "configs", "7fd4_neolix_x3_size_7v.json")
 
 COL2 = 7.16
 plt.rcParams.update({

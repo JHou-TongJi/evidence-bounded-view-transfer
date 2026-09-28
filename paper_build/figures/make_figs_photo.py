@@ -17,7 +17,8 @@ import sys
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SRC_DIR = os.path.abspath(os.path.join(HERE, "..", "..", "05_评价结果", "src"))
+SRC_DIR = os.environ.get("DELIVERED_FRAMES",
+                         os.path.abspath(os.path.join(HERE, "..", "..", "delivered")))
 
 # (source filename, figure filename, expected size)
 ASSETS = [

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Portable final-result replay: static 2DGS -> camera-gated actor layer -> MP4.
 # Usage:
-#   cd 03_工程代码 && source env.local && bash run_render_1080p_7v.sh
+#   source env.local && bash run_render_1080p_7v.sh
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

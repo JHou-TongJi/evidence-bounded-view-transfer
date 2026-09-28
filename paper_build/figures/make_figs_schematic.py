@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Schematic figures (1-4) for the IEEE T-ITS cross-vehicle paper.
 
-Fig. 2 is drawn directly from 03_工程代码/configs/7fd4_neolix_x3_size_7v.json --
+Fig. 2 is drawn directly from configs/7fd4_neolix_x3_size_7v.json --
 positions, yaw and horizontal FOV are never hard-coded.
 """
 import json, os
@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Wedge, Rectangle, Circle
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-CFG = os.path.join(ROOT, "03_工程代码", "configs", "7fd4_neolix_x3_size_7v.json")
+CFG = os.path.join(ROOT, "configs", "7fd4_neolix_x3_size_7v.json")
 OUT = os.path.dirname(os.path.abspath(__file__))
 
 COL1, COL2 = 3.5, 7.16

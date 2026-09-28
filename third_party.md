@@ -1,15 +1,24 @@
-# 第三方组件、数据与许可说明
+# Third-Party Components, Data and Licences
 
-本目录仅包含本项目自有代码快照和配置，不复制第三方数据、模型权重或外部代码仓库。复现者应从官方渠道分别取得组件，并以对应仓库或模型卡中发布的**当前许可证文本**为准。
+This repository contains only the project's own code snapshot and configuration.
+It copies no third-party data, model weights or external code repositories.
+Anyone reproducing the work should obtain each component from its official
+channel, and treat the **current licence text** published in the corresponding
+repository or model card as authoritative.
 
-| 组件 | 本项目用途 | 官方来源 | 许可与使用边界 |
+| Component | Use in this project | Official source | Licence and boundary of use |
 | --- | --- | --- | --- |
-| NVIDIA PhysicalAI-Autonomous-Vehicles-NCore | 源多相机图像、LiDAR、标定、时间戳、车辆位姿和场景标签 | [Hugging Face 数据集页](https://huggingface.co/datasets/nvidia/PhysicalAI-Autonomous-Vehicles-NCore) | 受 NVIDIA 数据访问协议与数据集页面条款约束。数据为受控输入，不随本提交分发；不得擅自公开原始图像、点云、标定、track 或可逆数据副本。 |
-| NVIDIA InstantNuRec | 上游静态 Gaussian 场景导出、NCore 读取流程参考 | [官方 GitHub](https://github.com/NVIDIA/instant-nurec) | 代码、权重和相关组件的许可可能不同。应按仓库 `LICENSE`、模型卡及 NVIDIA 条款获取和使用；本提交不携带其副本或权重。 |
-| 2D Gaussian Splatting | 表面约束的静态背景训练与目标相机渲染接口 | [官方 GitHub](https://github.com/hbb1/2d-gaussian-splatting) | 官方仓库采用 Gaussian-Splatting License；该许可对研究、评估和商用用途有单独约束。复现前须阅读仓库根目录许可并获得适当授权。 |
-| gsplat | PLY Gaussian 的基础 rasterization 与部分渲染工具 | [官方 GitHub](https://github.com/nerfstudio-project/gsplat) | 依照其仓库 LICENSE 与安装包元数据使用。它作为 Python/CUDA 依赖安装，不在本提交中重新分发。 |
-| NVIDIA SegFormer B5 ADE20K | 从本地权重推理天空语义，构建 direction-domain temporal sky | [模型页](https://huggingface.co/nvidia/segformer-b5-finetuned-ade-640-640) | 权重、配置和 Transformer 代码分别遵守模型卡、NVIDIA 条款及 Hugging Face / Transformers 的适用许可。仅从已获授权的本地副本加载。 |
-| Depth Anything V2 | 静态场景道路表面初始化的低权重单目深度先验 | [官方 GitHub](https://github.com/DepthAnything/Depth-Anything-V2) | 代码和各权重的许可以官方仓库和模型发布页面为准。其输出只作辅助约束，不替代 NCore LiDAR。 |
-| FFmpeg / OpenH264 | 将逐帧 PNG 编码为 H.264、`yuv420p` MP4 | [FFmpeg](https://ffmpeg.org/)；[OpenH264](https://github.com/cisco/openh264) | 编码器的可用性、编译选项与专利/再分发义务取决于本地 FFmpeg 构建。复现者应使用符合其发布环境要求的编码器和许可证。 |
+| NVIDIA PhysicalAI-Autonomous-Vehicles-NCore | Source multi-camera images, LiDAR, calibration, timestamps, vehicle poses and scene labels | [Hugging Face dataset page](https://huggingface.co/datasets/nvidia/PhysicalAI-Autonomous-Vehicles-NCore) | Governed by the NVIDIA data access agreement and the dataset page terms. The data is a controlled input and is not distributed with this submission; source images, point clouds, calibration, tracks or reversible copies must not be published without authorisation. |
+| NVIDIA InstantNuRec | Upstream static Gaussian scene export; reference for the NCore reading pipeline | [Official GitHub](https://github.com/NVIDIA/instant-nurec) | The licences for code, weights and related components may differ. Obtain and use them according to the repository `LICENSE`, the model card and NVIDIA's terms; this submission carries neither a copy nor any weights. |
+| 2D Gaussian Splatting | Surface-constrained static background training and the target camera rendering interface | [Official GitHub](https://github.com/hbb1/2d-gaussian-splatting) | The official repository uses the Gaussian-Splatting License, which places separate constraints on research, evaluation and commercial use. Read the licence at the repository root and obtain appropriate authorisation before reproducing. |
+| gsplat | Base rasterisation for PLY Gaussians and some rendering utilities | [Official GitHub](https://github.com/nerfstudio-project/gsplat) | Used according to its repository LICENSE and package metadata. It is installed as a Python/CUDA dependency and is not redistributed here. |
+| NVIDIA SegFormer B5 ADE20K | Sky semantic inference from local weights, for building the direction-domain temporal sky | [Model page](https://huggingface.co/nvidia/segformer-b5-finetuned-ade-640-640) | Weights, configuration and the Transformers code are each subject to the model card, NVIDIA's terms, and the applicable Hugging Face / Transformers licences. Loaded only from an authorised local copy. |
+| Depth Anything V2 | Low-weight monocular depth prior for static road-surface initialisation | [Official GitHub](https://github.com/DepthAnything/Depth-Anything-V2) | The licences for the code and for each set of weights are governed by the official repository and model release pages. Its output serves only as an auxiliary constraint and does not replace NCore LiDAR. |
+| FFmpeg / OpenH264 | Encoding per-frame PNGs into H.264 `yuv420p` MP4 | [FFmpeg](https://ffmpeg.org/); [OpenH264](https://github.com/cisco/openh264) | Encoder availability, build options and patent/redistribution obligations depend on the local FFmpeg build. Use an encoder and licence appropriate to your release environment. |
 
-本项目引用的论文、模型和开源实现用于工程实验与可复现描述，不代表获得其数据、权重、商标或商业部署授权。若最终用途超出赛事评审、研究或内部验证范围，应单独完成数据合规、软件许可、模型许可和知识产权审查。
+The papers, models and open-source implementations cited by this project are used
+for engineering experiments and reproducible description. Citing them does not
+constitute authorisation for their data, weights, trademarks or commercial
+deployment. If the end use goes beyond competition review, research or internal
+validation, a separate data-compliance, software-licence, model-licence and
+intellectual-property review should be completed.

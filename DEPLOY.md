@@ -1,101 +1,158 @@
-# 工程代码与复现说明
+# Engineering Code and Reproduction Guide
 
-本目录提供最终 L4 7V 演示的冻结代码、目标相机 rig、可移植的重渲染脚本与环境变量模板。它支持两种复现范围：
+This repository provides the frozen code for the final seven-view L4
+demonstration, the target camera rig, a portable re-render script and an
+environment-variable template. It supports two scopes of reproduction:
 
-1. **最终结果重渲染**：在已具备本场景静态 2DGS checkpoint、temporal sky 和 actor registry 的前提下，重新生成 7×299 张 1920×1080 RGB、七路 MP4 与 7V mosaic；
-2. **从授权 NCore 数据重建资产**：从 NCore clip、InstantNuRec 导出、天空构建、2DGS 训练到 actor registry 的完整工程流程。该流程需要授权数据、外部仓库及较长 GPU 训练，不随提交包直接分发。
+1. **Re-rendering the final result** — given this scene's static 2DGS
+   checkpoint, temporal sky and actor registry, regenerate 7×299 RGB frames at
+   1920×1080, the seven single-camera MP4s and the seven-view mosaic;
+2. **Rebuilding the assets from licensed NCore data** — the full engineering
+   pipeline from the NCore clip through InstantNuRec export, sky construction,
+   2DGS training and the actor registry. That pipeline requires licensed data,
+   external repositories and lengthy GPU training, and is not distributed with
+   this package.
 
-`configs/7fd4_neolix_x3_size_7v.json` 是目标 L4 7V 工程 rig；其中 `ncore_path` 是占位符，运行脚本会以 `NCORE_SEQUENCE_JSON` 自动写入副本。`` 包含 192 个冻结的代码与配置文件；训练数据、模型权重、2DGS checkpoint、天空资产、actor registry 和完整 PNG 序列均不包含在提交包内。
+[`configs/7fd4_neolix_x3_size_7v.json`](configs/7fd4_neolix_x3_size_7v.json) is
+the target seven-view L4 engineering rig. Its `ncore_path` is a placeholder; the
+run script writes a resolved copy using `NCORE_SEQUENCE_JSON`. `src/` holds the
+frozen code and configuration files. Training data, model weights, the 2DGS
+checkpoint, sky assets, the actor registry and the complete PNG sequence are all
+excluded from this package.
 
-## 外部项目、数据与许可
+## External projects, data and licences
 
-| 组件 | 用途 | 获取方式 |
+| Component | Purpose | How to obtain |
 | --- | --- | --- |
-| [NVIDIA InstantNuRec](https://github.com/NVIDIA/instant-nurec) | 从 NCore V4 驾驶日志导出初始 Gaussian 场景和上游资产 | 遵循官方安装说明及其代码/模型许可 |
-| [2D Gaussian Splatting](https://github.com/hbb1/2d-gaussian-splatting) | 训练与渲染表面约束的静态 2DGS 背景 | `git clone --recursive` 官方仓库；遵循其 Gaussian-Splatting License |
-| [NVIDIA PhysicalAI-Autonomous-Vehicles-NCore](https://huggingface.co/datasets/nvidia/PhysicalAI-Autonomous-Vehicles-NCore) | 多相机、LiDAR、标定、时间戳与场景描述输入 | 申请并遵守数据集访问协议；不得随提交重新分发 |
-| [NVIDIA SegFormer B5 ADE20K](https://huggingface.co/nvidia/segformer-b5-finetuned-ade-640-640) | 构建世界方向 temporal sky 时的天空语义分割 | 本地下载权重，遵守模型卡及上游许可 |
+| [NVIDIA InstantNuRec](https://github.com/NVIDIA/instant-nurec) | Exporting the initial Gaussian scene and upstream assets from NCore V4 driving logs | Follow the official installation instructions and its code/model licences |
+| [2D Gaussian Splatting](https://github.com/hbb1/2d-gaussian-splatting) | Training and rendering the surface-constrained static 2DGS background | `git clone --recursive` the official repository; observe its Gaussian-Splatting License |
+| [NVIDIA PhysicalAI-Autonomous-Vehicles-NCore](https://huggingface.co/datasets/nvidia/PhysicalAI-Autonomous-Vehicles-NCore) | Multi-camera, LiDAR, calibration, timestamp and scene-description input | Apply for and observe the dataset access agreement; must not be redistributed with a submission |
+| [NVIDIA SegFormer B5 ADE20K](https://huggingface.co/nvidia/segformer-b5-finetuned-ade-640-640) | Sky semantic segmentation when building the world-direction temporal sky | Download the weights locally; observe the model card and upstream licence |
 
-本项目提交的结果和代码不附带上述外部仓库、数据或权重。使用者应在开始前确认数据访问权限、模型许可与赛事规则。
+The results and code in this submission carry none of those external
+repositories, data or weights. Confirm data access rights, model licences and
+competition rules before starting.
 
-## 参考环境
+## Reference environment
 
-以下组合是本提交完成 GPU 渲染时使用的参考环境；不同显卡可以采用兼容版本，但应重新运行测试和小规模 smoke。
+The combination below is the reference environment used for GPU rendering in this
+submission. Other GPUs may use compatible versions, but the tests and a small
+smoke run should be repeated.
 
-| 类别 | 已验证版本/要求 |
+| Category | Validated version / requirement |
 | --- | --- |
-| 操作系统与 Python | Linux；Python 3.11 |
-| PyTorch / CUDA | PyTorch 2.7.0 + CUDA 12.8；NVIDIA GPU 计算能力应与 PyTorch CUDA 扩展兼容 |
-| 核心渲染库 | `gsplat 1.5.3`、`numpy 1.26.4`、`Pillow 12.2.0`、`plyfile >= 1.0` |
-| NCore 读取 | `nvidia-ncore 18.7.0`、`universal-pathlib >= 0.2` |
-| 天空/深度可选依赖 | `transformers 4.57.1`、`huggingface-hub 0.36.2`、`safetensors >= 0.4.3`、`scipy >= 1.10` |
-| 视频编码 | FFmpeg 8.1.2；H.264 编码器（本提交使用 `libopenh264`）和 `yuv420p` 像素格式 |
+| OS and Python | Linux; Python 3.11 |
+| PyTorch / CUDA | PyTorch 2.7.0 + CUDA 12.8; the NVIDIA GPU compute capability must be compatible with the PyTorch CUDA extensions |
+| Core rendering libraries | `gsplat 1.5.3`, `numpy 1.26.4`, `Pillow 12.2.0`, `plyfile >= 1.0` |
+| NCore reading | `nvidia-ncore 18.7.0`, `universal-pathlib >= 0.2` |
+| Optional sky/depth dependencies | `transformers 4.57.1`, `huggingface-hub 0.36.2`, `safetensors >= 0.4.3`, `scipy >= 1.10` |
+| Video encoding | FFmpeg 8.1.2; an H.264 encoder (this submission used `libopenh264`) and the `yuv420p` pixel format |
 
-建议先按 InstantNuRec 与 2DGS 官方仓库完成 CUDA/PyTorch 环境安装，再安装本提交中的渲染器：
+Install the CUDA/PyTorch environment following the official InstantNuRec and 2DGS
+repositories first, then install the renderer from this repository:
 
 ```bash
-cd 03_工程代码/source_snapshot
 python -m pip install -e '.[ncore,sky,depth]'
 ```
 
-首次使用 `gsplat`、2DGS 子模块或其他 CUDA 扩展时可能触发 JIT 编译。可通过 `TORCH_CUDA_ARCH_LIST` 指定显卡计算能力；RTX 40 系列的参考值为 `8.9`。
+The first use of `gsplat`, the 2DGS submodules or other CUDA extensions may
+trigger JIT compilation. Set `TORCH_CUDA_ARCH_LIST` to the GPU's compute
+capability; the reference value for the RTX 40 series is `8.9`.
 
-## 资产接口
+## Asset interfaces
 
-复制 `env.example` 为任意 shell 配置文件并填写路径。路径由使用者自行决定，脚本不假设服务器目录结构。
+Copy `env.example` to a shell configuration file of your choice and fill in the
+paths. The paths are yours to decide; the script assumes no server directory
+structure.
 
-| 变量 | 必需内容 | 最低检查 |
+| Variable | Required content | Minimum check |
 | --- | --- | --- |
-| `NCORE_SEQUENCE_JSON` | 授权 NCore sequence JSON | 文件存在，且相对 component store 路径可访问 |
-| `TWO_DGS_ROOT` | 官方 2DGS checkout 根目录 | 包含 `scene/gaussian_model.py` |
-| `STATIC_DATASET` | 本场景 20-tile 训练代理数据集 | 包含 `ncore_2dgs_manifest.json` |
-| `STATIC_MODEL` | 训练完成的静态 2DGS 模型目录 | 包含 `point_cloud/iteration_12000/point_cloud.ply` |
-| `SKY_ASSET` | temporal sky JSON 索引 | 文件存在且引用的 slot 资产可访问 |
-| `ACTOR_REGISTRY` | 通过来源时间留出验收的刚性 actor registry | `chunk0-rigid-incumbent-v1.json` 或等价 schema 文件 |
-| `OUTPUT_ROOT` | 新建输出根目录 | 具有写权限；不得覆盖既有正式结果 |
+| `NCORE_SEQUENCE_JSON` | Licensed NCore sequence JSON | The file exists and the relative component-store paths are reachable |
+| `TWO_DGS_ROOT` | Root of the official 2DGS checkout | Contains `scene/gaussian_model.py` |
+| `STATIC_DATASET` | This scene's 20-tile training proxy dataset | Contains `ncore_2dgs_manifest.json` |
+| `STATIC_MODEL` | Directory of the trained static 2DGS model | Contains `point_cloud/iteration_12000/point_cloud.ply` |
+| `SKY_ASSET` | Temporal sky JSON index | The file exists and the slot assets it references are reachable |
+| `ACTOR_REGISTRY` | Rigid actor registry accepted by the source-time holdout | `chunk0-rigid-incumbent-v1.json` or an equivalent schema file |
+| `OUTPUT_ROOT` | A newly created output root | Writable; must not overwrite existing formal results |
 
-本提交最终资产标识如下：静态 checkpoint 为 `chunk0-clean-static-road-nearfield-fullclip-20tile-12000-v1`，actor registry 为 `chunk0-rigid-incumbent-v1.json`，时序长度为 299 帧，帧率为 30 FPS。
+The final asset identifiers for this submission are: static checkpoint
+`chunk0-clean-static-road-nearfield-fullclip-20tile-12000-v1`, actor registry
+`chunk0-rigid-incumbent-v1.json`, sequence length 299 frames, frame rate 30 FPS.
 
-## 最终 1080p 结果重渲染
+## Re-rendering the final 1080p result
 
 ```bash
-cd 03_工程代码
 cp env.example env.local
-# 编辑 env.local，填写上表中的变量。
+# Edit env.local and fill in the variables from the table above.
 source env.local
 bash run_render_1080p_7v.sh
 ```
 
-脚本执行顺序为：
+The script runs in this order:
 
-1. 将目标 rig 中的 NCore 输入占位符替换为 `NCORE_SEQUENCE_JSON`，生成本次运行的 resolved rig；
-2. 调用 `two_dgs_target_render_cli`，以静态 2DGS、目标 rig 和 temporal sky 直接光栅化 7×299 张 1920×1080 静态 RGB；
-3. 调用 `two_dgs_actor_target_render_cli`，读取同一静态 RGB 和冻结 registry，以最大观察角 25°、距离比 0.60–1.60、100 ms fade 选择经过来源留出验收的 actor expert；无可靠证据的帧保持静态背景；
-4. 使用 FFmpeg 将七路 RGB 编码为 30 FPS、H.264、`yuv420p` MP4，并生成 3×3 布局的 7V mosaic。
+1. Replace the NCore input placeholder in the target rig with
+   `NCORE_SEQUENCE_JSON`, producing a resolved rig for this run;
+2. call `two_dgs_target_render_cli` to rasterise 7×299 static RGB frames at
+   1920×1080 directly from the static 2DGS, the target rig and the temporal sky;
+3. call `two_dgs_actor_target_render_cli`, which reads the same static RGB and
+   the frozen registry and selects source-holdout-accepted actor experts under a
+   maximum viewing angle of 25°, a distance ratio of 0.60–1.60 and a 100 ms fade;
+   frames without reliable evidence keep the static background;
+4. encode the seven RGB streams into 30 FPS H.264 `yuv420p` MP4s with FFmpeg and
+   produce the 3×3 seven-view mosaic.
 
-该流程的输出目录会包含 `static/`、`actors/`、`media/` 和本次 resolved rig。脚本拒绝覆盖非空 `static/` 或 `actors/` 目录，以避免误覆盖已有实验结果。
+The output directory contains `static/`, `actors/`, `media/` and the resolved rig
+for that run. The script refuses to overwrite a non-empty `static/` or `actors/`
+directory, to avoid clobbering existing experimental results.
 
-最终 1080p 图像由目标 pinhole 相机参数直接光栅化，并非简单放大旧版 480×270 PNG。静态 2DGS 的训练代理分辨率仍为 480×270，因此输出分辨率提高主要改善采样密度与边缘呈现；动态对象完整性和可恢复几何范围仍受原始观测与训练资产限制。
+The final 1080p images are rasterised directly through the target pinhole camera
+parameters; they are not a simple upscaling of the older 480×270 PNGs. The static
+2DGS training proxy is still 480×270, so the higher output resolution mainly
+improves sampling density and edge presentation; dynamic-object completeness and
+the range of recoverable geometry remain bounded by the original observations and
+training assets.
 
-## 从 NCore 完整重建资产
+## Rebuilding the assets from NCore
 
-完整重建应按以下阶段执行，并在每个阶段保存 manifest、命令、软件版本和输入哈希：
+A full rebuild should proceed in the stages below, saving the manifest, commands,
+software versions and input hashes at each stage:
 
-1. **上游静态场景初始化**：使用 InstantNuRec 对授权 NCore clip 执行导出，保留 PLY、输入 clip 标识和模型版本；
-2. **动态实例与天空资产**：以 NCore 标定、FTheta/rolling-shutter 位姿、动态实例 mask 与 SegFormer 构建 temporal sky；
-3. **静态 2DGS 训练代理**：运行 `two_dgs_dataset_cli` 生成 20-tile、480×270 的 pinhole 代理、动态排除 mask 和多帧 LiDAR 道路监督；
-4. **静态背景训练与选择**：使用官方 2DGS 训练 12,000 iteration，前 3,000 iteration 后冻结 densification；在独立道路 LiDAR holdout 上选择 checkpoint；
-5. **actor expert 训练与筛选**：仅将来源时间留出满足 RGB、alpha IoU 和面积门槛的刚性 actor 写入 registry；不满足门槛的动态目标在目标视角回退为静态背景；
-6. **目标 L4 7V 重渲染与验收**：运行本目录脚本，检查每路 299 帧完整性、视频元数据、actor 外 RGB 保留性及 `checksums.sha256`。
+1. **Upstream static scene initialisation** — run the InstantNuRec export on the
+   licensed NCore clip, retaining the PLY, the input clip identifier and the
+   model version;
+2. **Dynamic instances and sky assets** — build the temporal sky from NCore
+   calibration, FTheta/rolling-shutter poses, dynamic instance masks and
+   SegFormer;
+3. **Static 2DGS training proxy** — run `two_dgs_dataset_cli` to generate the
+   20-tile 480×270 pinhole proxy, the dynamic exclusion masks and multi-frame
+   LiDAR road supervision;
+4. **Static background training and selection** — train 12,000 iterations with
+   the official 2DGS, freezing densification after the first 3,000; select the
+   checkpoint on an independent road LiDAR holdout;
+5. **Actor expert training and selection** — write to the registry only those
+   rigid actors meeting the RGB, alpha IoU and area thresholds on the source-time
+   holdout; dynamic targets failing the thresholds fall back to the static
+   background in the target view;
+6. **Target seven-view re-render and acceptance** — run this repository's script
+   and check per-camera 299-frame completeness, video metadata, outside-actor RGB
+   preservation and `evidence/checksums.sha256`.
 
-`examples/` 保留了部分历史实验脚本，适合了解数据集构建和训练超参数；最终交付以本 README、`env.example` 与 `run_render_1080p_7v.sh` 为准。由于 checkpoint、sky、actor registry 和训练数据均不随提交分发，完整重建需要重新获得授权数据并执行上述训练阶段，不能由提交包单独完成。
+`examples/` retains some historical experiment scripts, useful for understanding
+dataset construction and training hyperparameters; the authoritative final
+delivery is this file together with `env.example` and `run_render_1080p_7v.sh`.
+Because the checkpoint, sky, actor registry and training data are not distributed
+with this package, a full rebuild requires re-obtaining licensed data and running
+the training stages above; it cannot be completed from this package alone.
 
-## 验证
+## Verification
 
-渲染完成后，在 `03_工程代码` 目录执行：
+From the repository root:
 
 ```bash
-sha256sum -c ../05_评价结果/checksums.sha256
+sha256sum -c evidence/checksums.sha256
 ```
 
-该命令验证**已包含在提交包中的文件**。重新渲染出的新目录应独立进行文件数、视频帧数、分辨率、帧率和 manifest 检查，不应覆盖提交包内的基准媒体。
+This verifies **the evidence files shipped in this repository**. A newly rendered
+output directory should be checked independently for file count, video frame
+count, resolution, frame rate and manifest consistency, and must not overwrite
+the reference media in this package.
