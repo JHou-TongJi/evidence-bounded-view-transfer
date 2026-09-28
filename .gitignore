@@ -10,10 +10,8 @@ dist/
 env.local
 .env
 
-# Manuscript build output. The DOCX and PDF embed representative frames derived
-# from NCore, which the data-compliance statement keeps out of open
-# redistribution; the build system that produces them is in paper_build/.
-paper_build/build/
+# Documents that embed representative frames derived from NCore, which the
+# data-compliance statement keeps out of open redistribution.
 *.docx
 *.pdf
 

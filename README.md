@@ -4,12 +4,6 @@ Re-rendering a calibrated passenger-car recording into the geometry of a
 seven-camera L4 delivery-vehicle rig, under the constraint that **no image of the
 target rig exists** against which the result could be scored.
 
-![Problem setup](docs/figures/fig01_problem.png)
-
-*Source and target differ in camera centres, mounting height, field of view, lens
-model and shutter model simultaneously. Every target pixel is assigned exactly one
-of four observability classes, and the renderer is required to say which.*
-
 | | |
 |---|---|
 | **Delivery** | 7 cameras × 299 frames = **2,093** frames, 1920×1080 at 30 FPS, 9.97 s |
@@ -19,9 +13,9 @@ of four observability classes, and the renderer is required to say which.*
 | **Compositing safety** | outside-actor RGB MAE ≤ **2.9 × 10⁻⁶** on all seven cameras |
 | **Scope of the guarantee** | actor layer only — static + sky carry 97.3% of delivered pixels and may extrapolate |
 
-This repository holds the renderer, the rig configuration, the evaluation
-evidence, and the build system for the manuscript. It deliberately does **not**
-hold the source dataset, the trained models, or the full rendered output — see
+This repository holds the renderer, the rig configuration and the evaluation
+evidence. It deliberately does **not** hold the source dataset, the trained
+models, or the full rendered output — see
 [What is not here](#what-is-not-here-and-why).
 
 ---
@@ -33,14 +27,22 @@ field of view, lens model and shutter model — all at once. That makes this
 *rig substitution*, not novel-view synthesis, and it removes the held-out
 reference image that view synthesis is normally scored against.
 
-The approach is to render only what the source recording supports, and to
-refuse rather than extrapolate.
+Source and target meet only in the NCore world frame. A source pixel is
+un-projected through the measured FTheta polynomial, rolling-shutter-corrected to
+its own row time, carried into world coordinates, and re-projected through the
+target rectified pinhole:
 
-![Pipeline](docs/figures/fig04_pipeline.png)
+```text
+p = (u, v)  FTheta image
+  -> normalised radius rho,  theta = sum_i a_i * rho^i
+  -> source camera ray r_cam  (unit, OpenCV convention)
+  -> world point  via  T_cam->world^src(t_row),  rolling-shutter corrected
+  -> target camera  via  T_cam->rig^k  then  T_rig->world(t)
+  -> target pixel  via  K_k [R|t],  1920 x 1080
+```
 
-Source and target meet only in the NCore world frame. A source pixel is un-projected through the measured FTheta polynomial, rolling-shutter-corrected to its own row time, carried into world coordinates, and re-projected through the target rectified pinhole:
-
-![Transfer chain](docs/figures/fig03_transfer_chain.png)
+The approach is to render only what the source recording supports, and to refuse
+rather than extrapolate:
 
 - **Static geometry** — surface-aligned 2D Gaussian splatting, supervised by
   road LiDAR, rendered directly into the target camera.
@@ -51,21 +53,29 @@ Source and target meet only in the NCore world frame. A source pixel is un-proje
   *and* the target-side view-angle, distance-ratio and temporal gates all pass.
   Otherwise the renderer emits nothing and records which gate refused it.
 
+Every target pixel is assigned exactly one observability class:
+
+| Class | Meaning |
+|---|---|
+| MEASURED | a LiDAR return lands on this surface |
+| RECONSTRUCTED | static or sky model only; fitted, but free to extrapolate |
+| CONDITIONAL | actor observed by a source camera whose expert passes every gate |
+| UNKNOWN | no admissible source view; no actor emitted, invalid bit set |
+
 **The fail-closed guarantee covers the actor layer only.** The static and sky
 layers are unconditional reconstructions that may extrapolate, and they carry
-97.3% of delivered pixels. The manuscript states this scope explicitly; so does
-this README, because it is the single easiest thing to overread.
+97.3% of delivered pixels. This is the single easiest thing to overread, which is
+why it is stated here as well as in the reports under `docs/`.
 
 ---
 
 ## The target rig
 
-![Rig layout](docs/figures/fig02_rig_layout.png)
-
 Seven rectified virtual pinholes on a 2.69 × 1.08 × 1.82 m proxy platform,
 1.73 m wheelbase. Intrinsics are *fx = fy* = 805.5356 px, principal point
 (959.5, 539.5), 100° horizontal / 67.673° vertical field of view. Full
-configuration: [`configs/7fd4_neolix_x3_size_7v.json`](configs/7fd4_neolix_x3_size_7v.json).
+configuration:
+[`configs/7fd4_neolix_x3_size_7v.json`](configs/7fd4_neolix_x3_size_7v.json).
 
 | Camera | x (m) | y (m) | z (m) | yaw (deg) | pitch (deg) | H-FOV (deg) |
 |---|---:|---:|---:|---:|---:|---:|
@@ -80,8 +90,6 @@ configuration: [`configs/7fd4_neolix_x3_size_7v.json`](configs/7fd4_neolix_x3_si
 Camera extrinsics are engineering assumptions constrained to the vehicle
 envelope, not an OEM calibration. The platform specification and its provenance
 are in [`docs/target-platform-sensors.md`](docs/target-platform-sensors.md).
-
-![Platform](docs/figures/fig05_platform.png)
 
 ### How far each target camera moves
 
@@ -98,23 +106,20 @@ Measured against the single source mounting that NCore publishes:
 | rear left | 2.36 | +0.01 |
 
 Rear cameras move more than ten times as far as the front centre, which is why
-per-camera results below are not interchangeable.
+the per-camera results below are not interchangeable.
 
 ---
 
 ## Results
 
-Every number here is read from [`evidence/`](evidence) by
-`paper_build/paper_data.py`, and `paper_build/verify_claims.py` re-derives all of
-them from the built manuscript on every run.
+Every number here is read from [`evidence/`](evidence). Each table names the file
+it came from, so any figure can be traced back to its source.
 
 ### Static geometry — the only layer with an independent reference
 
 Road LiDAR returns are held out and compared against the *same* static 2DGS model
-the delivery uses. This validates the geometry in the **source** domain; it is not
-target-view ground truth.
-
-![Holdout distribution](docs/figures/fig06_holdout_distribution.png)
+the delivery uses. This validates the geometry in the **source** domain; it is
+not target-view ground truth.
 
 | Source camera | Held-out views | Road pixels | Depth MAE (m) | Median (m) |
 |---|---:|---:|---:|---:|
@@ -125,7 +130,7 @@ target-view ground truth.
 | `camera_cross_right_120fov` | 72 | 1,543,841 | 1.328 | 0.278 |
 | **pooled** | **240** | **6,067,229** | **1.068** | 0.253 |
 
-![Holdout by camera](docs/figures/fig07_holdout_by_camera.png)
+Source: [`evidence/road_lidar_holdout_same_static_model.json`](evidence/road_lidar_holdout_same_static_model.json).
 
 The gap between a 1.07 m mean and a 0.25 m median is the whole story: central
 road depth is accurate, and a long tail at range carries the mean. The p90 is
@@ -133,12 +138,23 @@ road depth is accurate, and a long tail at range carries the mean. The p90 is
 
 ### Actor registry — what the gates admitted and refused
 
-![Registry acceptance](docs/figures/fig08_registry_acceptance.png)
-
 Six experts over 42 candidate tracks survived the source-side holdout; two were
 rejected. Admission to a given target camera then requires the view-angle,
 distance-ratio and temporal gates to pass on that camera, which is why an
 accepted expert still appears on some cameras and not others.
+
+| Track | Class | Source camera | Masked RGB MAE | Alpha IoU | Area ratio |
+|---:|---|---|---:|---:|---:|
+| 17 | heavy_truck | `camera_cross_right_120fov` | 0.051415 | 0.9663 | 1.0064 |
+| 17 | heavy_truck | `camera_front_wide_120fov` | 0.038291 | 0.8691 | 1.0007 |
+| 17 | heavy_truck | `camera_rear_right_70fov` | 0.062443 | 0.8479 | 1.0576 |
+| 18 | automobile | `camera_cross_right_120fov` | 0.046973 | 0.9493 | 1.0147 |
+| 42 | automobile | `camera_cross_left_120fov` | 0.024260 | 0.9753 | 1.0051 |
+| 67 | automobile | `camera_cross_left_120fov` | 0.034380 | 0.9119 | 1.0239 |
+
+Source: [`evidence/accepted_actor_registry.json`](evidence/accepted_actor_registry.json).
+These six rows prove only that each expert passed on its **own** source camera's
+held-out interval. They say nothing about correctness in the target view.
 
 ### Per-camera delivery ledger
 
@@ -152,17 +168,14 @@ accepted expert still appears on some cameras and not others.
 | rear left | 18 / 299 | 94.0% | 0.08% | 0.720 | 3.0 × 10⁻⁸ |
 | rear right | 46 / 299 | 84.6% | 1.10% | 0.479 | 1.1 × 10⁻⁶ |
 
-![Activation ledger](docs/figures/fig09_activation_ledger.png)
+Source: the seven per-camera JSON files in [`evidence/`](evidence).
 
 **Adjacent alpha IoU** is a temporal-consistency proxy, not an accuracy measure:
 it says the actor mask moves smoothly between adjacent frames, and says nothing
 about whether the actor is geometrically correct in a view nobody observed.
 **Outside-actor RGB MAE** checks compositing safety — that writing an actor did
 not disturb any pixel outside its own mask — and likewise is not photometric
-ground truth.
-
-![Alpha IoU](docs/figures/fig10_alpha_iou.png)
-![Outside-actor MAE](docs/figures/fig11_outside_actor.png)
+ground truth. Each per-camera JSON carries its own `limitations` block saying so.
 
 ### Abstention, decomposed
 
@@ -198,15 +211,10 @@ Mean displacement nearly doubles, 1.14 m → 2.10 m, at a 2× envelope.
 
 ### Delivered output
 
-![Seven-view mosaic](docs/figures/fig12_mosaic_7v_lowres.png)
-
-*One timestamp across all seven target cameras, downscaled to 1200 px wide — a
-lower resolution than the 640×360 demonstration clips, and included on the same
-terms. The blank centre tile is the mosaic layout, not a missing camera.*
-
-Moving footage is in [`demo/`](demo): `l4_7v_mosaic_640x360_demo.mp4` and
-`camera_comparison_640x360_demo.mp4`. The full-resolution output is withheld —
-see below.
+Moving footage is in [`demo/`](demo): `l4_7v_mosaic_640x360_demo.mp4` shows all
+seven target cameras in sync, and `camera_comparison_640x360_demo.mp4` puts
+source and target side by side. The full-resolution output and the representative
+frames are withheld — see below.
 
 ---
 
@@ -215,16 +223,15 @@ see below.
 | File | Contents |
 |---|---|
 | [`evidence/quality_metrics.csv`](evidence/quality_metrics.csv) | Flat table of every headline metric with unit and interpretation |
-| [`evidence/road_lidar_holdout_same_static_model.json`](evidence) | Per-view LiDAR-vs-2DGS depth holdout, 240 views |
-| [`evidence/accepted_actor_registry.json`](evidence) | The 6 admitted experts, their validity windows and source-side scores |
+| [`evidence/road_lidar_holdout_same_static_model.json`](evidence/road_lidar_holdout_same_static_model.json) | Per-view LiDAR-vs-2DGS depth holdout, 240 views |
+| [`evidence/accepted_actor_registry.json`](evidence/accepted_actor_registry.json) | The 6 admitted experts, their validity windows and source-side scores |
 | [`evidence/front_*.json`, `side_*.json`, `rear_*.json`](evidence) | Per-camera composite audit, 7 files |
-| [`evidence/static_2dgs_1080p_manifest.json`](evidence) | Static-layer render manifest |
-| [`evidence/actor_composite_1080p_manifest.json`](evidence) | Actor-layer composite manifest |
+| [`evidence/static_2dgs_1080p_manifest.json`](evidence/static_2dgs_1080p_manifest.json) | Static-layer render manifest |
+| [`evidence/actor_composite_1080p_manifest.json`](evidence/actor_composite_1080p_manifest.json) | Actor-layer composite manifest |
 | [`evidence/checksums.sha256`](evidence/checksums.sha256) | SHA-256 over every file in `evidence/`; verify with `sha256sum -c evidence/checksums.sha256` |
-| [`paper_build/figures/dataset_panels.json`](paper_build/figures/dataset_panels.json) | Panel counts backing the dataset figures (8 + 7 + 6 = 21) |
 
 Each per-camera JSON carries its own `limitations` block naming what the metric
-does **not** establish. Those blocks are quoted verbatim in the manuscript.
+does **not** establish.
 
 ### Documentation
 
@@ -246,11 +253,10 @@ does **not** establish. Those blocks are quoted verbatim in the manuscript.
 |---|---|
 | `src/nurec_gs_renderer/` | Renderer, camera models, sky compositing, 2DGS data interfaces, actor registry and gates (146 modules) |
 | `configs/` | Rig configuration and per-experiment configs. `7fd4_neolix_x3_size_7v.json` is the target rig |
-| `evidence/` | Every measured quantity the manuscript reports, as JSON + CSV, with SHA-256 checksums |
-| `paper_build/` | Deterministic manuscript build: content modules, figure generators, and the audit that checks the text against `evidence/` |
+| `evidence/` | Every measured quantity reported here, as JSON + CSV, with SHA-256 checksums |
 | `docs/` | Technical report, sensor and data-source notes, compliance statement, results report, failure log |
-| `docs/figures/` | The figures reproduced in this README |
 | `demo/` | Low-resolution demonstration videos (see licence note below) |
+| `examples/` | Frozen historical 2DGS training and diagnostic scripts |
 | `DEPLOY.md` | Reproduction entry point — environment, asset interfaces, re-render and verification |
 
 ---
@@ -278,21 +284,12 @@ cp env.example env.local        # fill in dataset and output roots
 ./run_render_1080p_7v.sh        # re-render the 1080p seven-view delivery
 ```
 
-Rendering requires NCore access (below) and a GPU. Everything downstream of the
-render — the evidence JSONs, every number in this README, every number in the
-manuscript, and every figure — rebuilds from this repository alone:
+Rendering requires NCore access (below) and a GPU. The evidence files can be
+checked without either:
 
 ```bash
-cd paper_build
-python build_access_paper.py    # build the manuscript
-python verify_claims.py         # deterministic checks against evidence/
-python figures/make_figs_data.py       # result plots
-python figures/make_figs_schematic.py  # schematic figures
+sha256sum -c evidence/checksums.sha256
 ```
-
-`verify_claims.py` re-extracts the built text on every run and fails on any
-mismatch between what the manuscript says and what `evidence/` contains. It is
-the check to run after any edit.
 
 ---
 
@@ -318,13 +315,10 @@ and accept its licence.
 ### The demonstration material
 
 `demo/` holds two 640×360 clips, downscaled from the delivered 1920×1080
-output, and `docs/figures/fig12_mosaic_7v_lowres.png` is a single still at a
-lower per-tile resolution than those clips. They are included to show coverage
-and cross-camera synchronisation. They are **not** a dataset release: do not
-redistribute them as one, do not mine them for licence plates, faces or
-pedestrian identity, and do not present them as a recording from any commercial
-vehicle. Every other figure in this README is generated from `evidence/` and
-contains no dataset pixels.
+output. They are included to show coverage and cross-camera synchronisation.
+They are **not** a dataset release: do not redistribute them as one, do not mine
+them for licence plates, faces or pedestrian identity, and do not present them as
+a recording from any commercial vehicle.
 
 The source clip is a public-road recording and contains identifiable third
 parties. The renderer does not remove them — it withholds only what it cannot
@@ -342,8 +336,7 @@ The code and configuration in this repository are licensed under
 That licence covers **this repository's own contents only**. It does not and
 cannot relicense:
 
-- the NCore dataset or anything derived from it, including `demo/` and
-  `docs/figures/fig12_mosaic_7v_lowres.png`;
+- the NCore dataset or anything derived from it, including `demo/`;
 - the 2D Gaussian Splatting code and its submodules, which carry the
   Gaussian-Splatting License (Inria / MPII) restricting use to research and
   evaluation;
@@ -364,7 +357,7 @@ Every metric in the Results section above is measured in the **source** domain
 or is a **consistency proxy**. None of them is target-view photometric ground
 truth, because no target-rig reference image exists.
 
-The decisive missing experiment is stated in the manuscript: hold out one
-physical source camera entirely, render its real poses, and score against its
-real images. That would convert the current coverage numbers into a genuine
-risk–coverage trade-off. It has not been run.
+The decisive missing experiment: hold out one physical source camera entirely,
+render its real poses, and score against its real images. That would convert the
+current coverage numbers into a genuine risk–coverage trade-off. It has not been
+run.

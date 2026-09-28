@@ -295,10 +295,8 @@ evidence is in the seven JSON files such as
 > (`source_vehicle_vs_target_l4_frame270.png`,
 > `target_l4_front_center_frame020.png`,
 > `target_l4_7v_mosaic_frame000.png`) are withheld from this repository under §4
-> of [`data-compliance.md`](data-compliance.md). A downscaled version of the
-> seven-view mosaic is published as
-> [`figures/fig12_mosaic_7v_lowres.png`](figures/fig12_mosaic_7v_lowres.png), and
-> the moving equivalents are in [`../demo/`](../demo).
+> of [`data-compliance.md`](data-compliance.md). The moving equivalents are in
+> [`../demo/`](../demo).
 
 ### 5.1 Source passenger car and the corresponding target directions
 
