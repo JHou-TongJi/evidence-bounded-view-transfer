@@ -220,18 +220,44 @@ frames are withheld — see below.
 
 ## Data
 
+Everything measured is in [`evidence/`](evidence). The CSVs are flat tables meant
+to be loaded directly; the JSONs are the records they were derived from and carry
+the run paths, thresholds and `limitations` blocks.
+
+### Tables
+
+| File | Rows | Contents |
+|---|---:|---|
+| [`evidence/frame_mapping.csv`](evidence/frame_mapping.csv) | 2,093 | Every delivered frame: target camera, frame index, time, source reference camera and source frame index. This is the provenance record — an erasure request against a source interval resolves through it to an exact set of derived frames |
+| [`evidence/road_lidar_holdout_per_view.csv`](evidence/road_lidar_holdout_per_view.csv) | 240 | Per-view LiDAR-vs-2DGS depth holdout: source camera, frame, tile, valid road pixels, MAE, median, relative MAE |
+| [`evidence/per_camera_metrics.csv`](evidence/per_camera_metrics.csv) | 7 | The delivery ledger: actor-active and zero-actor frames, actor alpha area, adjacent alpha IoU mean and p05, outside-actor RGB MAE and its maximum |
+| [`evidence/actor_expert_registry.csv`](evidence/actor_expert_registry.csv) | 8 | All 6 accepted and 2 rejected experts, with validity window, span, source-side scores and the rejection reason |
+| [`evidence/target_rig_extrinsics.csv`](evidence/target_rig_extrinsics.csv) | 7 | Target camera mounts: position, yaw/pitch/roll, field of view, and the full 4×4 `T_camera_rig` |
+| [`evidence/quality_metrics.csv`](evidence/quality_metrics.csv) | 23 | Headline metrics with unit and interpretation |
+
+### Source records
+
 | File | Contents |
 |---|---|
-| [`evidence/quality_metrics.csv`](evidence/quality_metrics.csv) | Flat table of every headline metric with unit and interpretation |
-| [`evidence/road_lidar_holdout_same_static_model.json`](evidence/road_lidar_holdout_same_static_model.json) | Per-view LiDAR-vs-2DGS depth holdout, 240 views |
-| [`evidence/accepted_actor_registry.json`](evidence/accepted_actor_registry.json) | The 6 admitted experts, their validity windows and source-side scores |
+| [`evidence/road_lidar_holdout_same_static_model.json`](evidence/road_lidar_holdout_same_static_model.json) | The holdout run: model, iteration, pooled MAE/median/p90, and all 240 per-view records |
+| [`evidence/accepted_actor_registry.json`](evidence/accepted_actor_registry.json) | The registry, including the `selection` thresholds every accepted expert had to meet |
 | [`evidence/front_*.json`, `side_*.json`, `rear_*.json`](evidence) | Per-camera composite audit, 7 files |
 | [`evidence/static_2dgs_1080p_manifest.json`](evidence/static_2dgs_1080p_manifest.json) | Static-layer render manifest |
 | [`evidence/actor_composite_1080p_manifest.json`](evidence/actor_composite_1080p_manifest.json) | Actor-layer composite manifest |
-| [`evidence/checksums.sha256`](evidence/checksums.sha256) | SHA-256 over every file in `evidence/`; verify with `sha256sum -c evidence/checksums.sha256` |
+| [`evidence/checksums.sha256`](evidence/checksums.sha256) | SHA-256 over every other file in `evidence/`; verify with `sha256sum -c evidence/checksums.sha256` |
 
 Each per-camera JSON carries its own `limitations` block naming what the metric
 does **not** establish.
+
+The CSVs are derived from the JSONs and the rig config, not entered by hand, and
+they reconcile with them: the 240 per-view rows sum to 6,067,229 pixels and a
+pixel-weighted MAE of 1.067868 m, matching the pooled figures in the JSON; the
+seven per-camera rows sum to 2,093 frames of which 527 carry an actor; and every
+accepted expert satisfies the `selection` thresholds recorded in the registry.
+
+This is measured output, not the input dataset. The source imagery, LiDAR,
+calibration and trajectories are not here and cannot be — see
+[What is not here](#what-is-not-here-and-why).
 
 ### Documentation
 

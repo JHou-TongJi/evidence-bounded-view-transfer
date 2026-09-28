@@ -1,0 +1,9 @@
+status,track_id,label,source_camera,validity_start_us,validity_end_us,validity_span_s,masked_rgb_mae,alpha_iou_0_5,alpha_area_ratio,positive_frames,expert_name,rejection_reason
+accepted,17,heavy_truck,camera_cross_right_120fov,3817621,5817627,2.000006,0.051415,0.966276,1.006421,10,track017_camera_cross_right_120fov_legacy1750,
+accepted,17,heavy_truck,camera_front_wide_120fov,2676482,4776476,2.099994,0.038291,0.869131,1.000739,10,track017_camera_front_wide_120fov,
+accepted,17,heavy_truck,camera_rear_right_70fov,6109815,7709819,1.600004,0.062443,0.847948,1.057635,8,track017_camera_rear_right_70fov,
+accepted,18,automobile,camera_cross_right_120fov,2050976,4084284,2.033308,0.046973,0.949281,1.014700,11,track018_camera_cross_right_120fov,
+accepted,42,automobile,camera_cross_left_120fov,7550955,9417632,1.866677,0.024260,0.975350,1.005127,9,track042_camera_cross_left_120fov,
+accepted,67,automobile,camera_cross_left_120fov,5717639,7317624,1.599985,0.034381,0.911867,1.023857,8,track067_camera_cross_left_120fov,
+rejected,,,,,,,0.025132,0.738575,1.681706,9,track017_camera_front_wide_120fov_legacy1750,does_not_meet_registry_thresholds
+rejected,,,,,,,0.051610,0.965807,1.005059,10,track017_camera_cross_right_120fov,overlapping_lower_quality_expert

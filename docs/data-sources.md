@@ -165,20 +165,24 @@ The roles of training, validation and presentation data are as follows:
 
 ## 5. Final submission samples and traceability
 
-Every target camera frame in the final submission can be traced through
-`frame_mapping.csv` to:
+Every target camera frame can be traced through
+[`evidence/frame_mapping.csv`](../evidence/frame_mapping.csv) — 2,093 rows, one
+per delivered frame — to:
 
 - the target camera ID;
-- the output frame index;
-- the corresponding NCore source reference frame;
-- the corresponding timestamp;
-- the target vehicle rig configuration;
-- the static 2DGS checkpoint;
-- the temporal sky asset;
-- the actor expert registry.
+- the output frame index and its time in the sequence;
+- the corresponding NCore source reference camera and reference frame index;
+- the relative path of the delivered RGB.
 
-`manifest.json`, `accepted_actor_registry.json`, `target_l4_rig.json`, the road
-LiDAR holdout report and the SHA-256 checksum table together constitute the
+The rig configuration, the static 2DGS checkpoint, the temporal sky asset and
+the actor expert registry are identified once per run rather than per frame, and
+are recorded in
+[`evidence/static_2dgs_1080p_manifest.json`](../evidence/static_2dgs_1080p_manifest.json),
+[`evidence/actor_composite_1080p_manifest.json`](../evidence/actor_composite_1080p_manifest.json)
+and
+[`evidence/accepted_actor_registry.json`](../evidence/accepted_actor_registry.json).
+Together with the road LiDAR holdout report and
+[`evidence/checksums.sha256`](../evidence/checksums.sha256), these constitute the
 traceability evidence for the results.
 
 ## 6. Data limitations
